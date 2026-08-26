@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Live Auction - E-Auction</title>
+</head>
+
+<body>
+
+    <h1>Live Auction</h1>
+
+    <table>
+
+        <tr>
+            <td>Auction ID</td>
+            <td>
+                <input type="number"
+                       id="auctionId"
+                       value="1"
+                       required>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Current Price</td>
+            <td>
+                <input type="number"
+                       id="currentPrice"
+                       value="0"
+                       readonly>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Bid Amount</td>
+            <td>
+                <input type="number"
+                       id="bidAmount"
+                       step="0.01"
+                       min="0"
+                       required>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <button type="button"
+                        onclick="placeBid()">
+                    PLACE BID
+                </button>
+            </td>
+
+            <td>
+                <button type="button"
+                        onclick="resetBid()">
+                    RESET
+                </button>
+            </td>
+        </tr>
+
+    </table>
+
+    <h2>Quick Bid</h2>
+
+    <div id="quickBids">
+
+        <button type="button"
+                onclick="placeQuickBid(2)">
+            +2%
+        </button>
+
+        <button type="button"
+                onclick="placeQuickBid(5)">
+            +5%
+        </button>
+
+        <button type="button"
+                onclick="placeQuickBid(10)">
+            +10%
+        </button>
+
+        <button type="button"
+                onclick="placeQuickBid(20)">
+            +20%
+        </button>
+
+    </div>
+
+    <h3>Quick Bid Values</h3>
+
+    <div id="quickBidValues">
+        Loading...
+    </div>
+
+    <h3>Auction Status</h3>
+
+    <p id="auctionStatus">
+        Loading...
+    </p>
+
+    <h3>WebSocket</h3>
+
+    <p id="connectionStatus">
+        Connecting...
+    </p>
+
+    <h3>Latest Update</h3>
+
+    <p id="latestUpdate">
+        Waiting for auction updates...
+    </p>
+
+    <p>
+        <a href="index.html">
+            Go to Home Page
+        </a>
+    </p>
+
+
+    <script>
+
+        let currentPrice = 0;
+
+        let socket = null;
+
+
+        function loadAuctionDetails() {
+
+            const auctionId =
+                document.getElementById("auctionId").value;
+
+            fetch("auction-details?auction_id=" + auctionId)
+
+                .then(response => response.json())
+
+                .then(data => {
+
+                    if (data.error) {
+
+                        document.getElementById("auctionStatus")
+                            .innerText = data.error;
+
+                        return;
+                    }
+
+                    currentPrice =
+                        parseFloat(data.current_price);
+
+                    document.getElementById("currentPrice")
+                        .value = currentPrice;
+
+                    document.getElementById("auctionStatus")
+                        .innerText =
+                        "Auction Status: " + data.status;
+
+                    updateQuickBidValues();
+
+                })
+
+                .catch(error => {
+
+                    document.getElementById("auctionStatus")
+                        .innerText =
+                        "Unable to load auction details.";
+
+                    console.error(error);
+                });
+        }
+
+
+        function updateQuickBidValues() {
+
+            const percentages = [2, 5, 10, 20];
+
+            const container =
+                document.getElementById("quickBidValues");
+
+            container.innerHTML = "";
+
+            percentages.forEach(function(percent) {
+
+                const amount = Math.ceil(
+                    currentPrice *
+                    (1 + percent / 100)
+                );
+
+                container.innerHTML +=
+                    "+" + percent +
+                    "% = &#8377;" +
+                    amount +
+                    "<br>";
+
+            });
+        }
+
+
+        function placeQuickBid(percent) {
+
+            if (currentPrice <= 0) {
+
+                alert(
+                    "Current price is not available."
+                );
+
+                return;
+            }
+
+            const amount = Math.ceil(
+                currentPrice *
+                (1 + percent / 100)
+            );
+
+            document.getElementById("bidAmount")
+                .value = amount;
+        }
+
+
+        function resetBid() {
+
+            document.getElementById("bidAmount")
+                .value = "";
+
+        }
+
+
+        function placeBid() {
+
+            const auctionId =
+                document.getElementById("auctionId")
+                    .value;
+
+            const amount =
+                document.getElementById("bidAmount")
+                    .value;
+
+            if (!auctionId || !amount) {
+
+                alert(
+                    "Enter auction ID and bid amount."
+                );
+
+                return;
+            }
+
+            const formData =
+                new URLSearchParams();
+
+            formData.append(
+                "auction_id",
+                auctionId
+            );
+
+            formData.append(
+                "amount",
+                amount
+            );
+
+
+            fetch("placeBid", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/x-www-form-urlencoded"
+                },
+
+                body: formData.toString()
+
+            })
+
+            .then(response => response.text())
+
+            .then(data => {
+
+                document.getElementById(
+                    "latestUpdate"
+                ).innerText =
+                    "Bid request submitted.";
+
+                loadAuctionDetails();
+
+            })
+
+            .catch(error => {
+
+                document.getElementById(
+                    "latestUpdate"
+                ).innerText =
+                    "Bid request failed.";
+
+                console.error(error);
+
+            });
+
+        }
+
+
+        function connectWebSocket() {
+
+            const protocol =
+                window.location.protocol === "https:"
+                ? "wss:"
+                : "ws:";
+
+            const socketUrl =
+                protocol +
+                "//" +
+                window.location.host +
+                window.location.pathname
+                    .substring(
+                        0,
+                        window.location.pathname
+                            .lastIndexOf("/")
+                    ) +
+                "/auctionSocket";
+
+
+            socket =
+                new WebSocket(socketUrl);
+
+
+            socket.onopen = function() {
+
+                document.getElementById(
+                    "connectionStatus"
+                ).innerText =
+                    "CONNECTED";
+
+            };
+
+
+            socket.onmessage = function(event) {
+
+                try {
+
+                    const data =
+                        JSON.parse(event.data);
+
+
+                    const selectedAuction =
+                        parseInt(
+                            document.getElementById(
+                                "auctionId"
+                            ).value
+                        );
+
+
+                    if (
+                        data.auction_id !==
+                        selectedAuction
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    if (
+                        data.type ===
+                        "BID_UPDATE"
+                    ) {
+
+                        currentPrice =
+                            parseFloat(
+                                data.current_price
+                            );
+
+
+                        document.getElementById(
+                            "currentPrice"
+                        ).value =
+                            currentPrice;
+
+
+                        updateQuickBidValues();
+
+
+                        document.getElementById(
+                            "latestUpdate"
+                        ).innerText =
+                            "New bid: ₹"
+                            + currentPrice
+                            + " | Winner ID: "
+                            + data.winner_id;
+
+
+                        if (data.extended) {
+
+                            document.getElementById(
+                                "latestUpdate"
+                            ).innerText +=
+                                " | Auction extended by "
+                                + data.extension_seconds
+                                + " seconds.";
+
+                        }
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "WebSocket message error:",
+                        error
+                    );
+
+                }
+
+            };
+
+
+            socket.onclose = function() {
+
+                document.getElementById(
+                    "connectionStatus"
+                ).innerText =
+                    "DISCONNECTED";
+
+            };
+
+
+            socket.onerror = function(error) {
+
+                document.getElementById(
+                    "connectionStatus"
+                ).innerText =
+                    "ERROR";
+
+                console.error(
+                    "WebSocket error:",
+                    error
+                );
+
+            };
+
+        }
+
+
+        loadAuctionDetails();
+
+        connectWebSocket();
+
+    </script>
+
+</body>
+
+</html>

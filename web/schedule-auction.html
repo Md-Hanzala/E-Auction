@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Schedule Auction - E-Auction</title>
+</head>
+
+<body>
+
+    <h1>Schedule Auction</h1>
+
+    <form method="post" action="schedule-auction">
+
+        <table>
+
+            <tr>
+                <td>Product ID</td>
+                <td>
+                    <input type="number" name="product_id" required>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Start Time</td>
+                <td>
+                    <input type="datetime-local" name="start_time" required>
+                </td>
+            </tr>
+
+            <tr>
+                <td>End Time</td>
+                <td>
+                    <input type="datetime-local" name="end_time" required>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Scheduling Mode</td>
+                <td>
+                    <select name="scheduling_mode" required>
+                        <option value="QUEUE">QUEUE</option>
+                        <option value="PARALLEL">PARALLEL</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <input type="submit" value="SCHEDULE AUCTION">
+                </td>
+                <td>
+                    <input type="reset" value="RESET">
+                </td>
+            </tr>
+
+        </table>
+
+    </form>
+
+    <p>
+        <a href="index.html">Go to Home Page</a>
+    </p>
+
+</body>
+</html>

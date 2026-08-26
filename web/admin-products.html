@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - Product Approval</title>
+</head>
+
+<body>
+
+    <h1>Admin Product Approval</h1>
+
+    <h2>Pending Products</h2>
+
+    <table border="1">
+
+        <tr>
+            <th>Product ID</th>
+            <th>Seller ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Image</th>
+            <th>Starting Price</th>
+            <th>Floor Price</th>
+            <th>Action</th>
+        </tr>
+
+        <tr>
+            <td>2</td>
+            <td>2</td>
+            <td>Lot 1945: The WWII Victory Parker 51 Fountain Pen</td>
+            <td>
+                Product description
+            </td>
+            <td>
+                <img src="uploads/1787689984048_VE-Day%20pen,%20354%20a-c%20-%20Walter%20Wolf.jpg"
+                     width="150">
+            </td>
+            <td>250000</td>
+            <td>200000</td>
+            <td>
+                <form method="post" action="approve-product">
+                    <input type="hidden" name="product_id" value="2">
+                    <input type="submit" value="APPROVE">
+                </form>
+
+                <br>
+
+                <form method="post" action="reject-product">
+                    <input type="hidden" name="product_id" value="2">
+                    <input type="submit" value="REJECT">
+                </form>
+            </td>
+        </tr>
+
+    </table>
+
+    <p>
+        <a href="index.html">Go to Home Page</a>
+    </p>
+
+</body>
+</html>
