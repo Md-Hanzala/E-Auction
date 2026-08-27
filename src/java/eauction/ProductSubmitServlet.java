@@ -17,76 +17,164 @@ import jakarta.servlet.http.Part;
 @MultipartConfig
 public class ProductSubmitServlet extends HttpServlet {
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    protected void processRequest(
+            HttpServletRequest request,
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType("text/html;charset=UTF-8");
 
-        HttpSession session = request.getSession(false);
+        HttpSession session =
+                request.getSession(false);
 
-        if (session == null || session.getAttribute("user_id") == null) {
+        if (session == null ||
+                session.getAttribute("user_id") == null) {
+
             response.sendRedirect("login.html");
             return;
         }
 
-        int sellerId = (Integer) session.getAttribute("user_id");
+        int sellerId =
+                (Integer) session.getAttribute("user_id");
 
-        String name = request.getParameter("name");
-        String description = request.getParameter("description");
-        String startPrice = request.getParameter("start_price");
-        String floorPrice = request.getParameter("floor_price");
+        String name =
+                request.getParameter("name");
 
-        Part imagePart = request.getPart("product_image");
+        String description =
+                request.getParameter("description");
 
-        String fileName = imagePart.getSubmittedFileName();
+        String startPrice =
+                request.getParameter("start_price");
 
-        String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
+        String floorPrice =
+                request.getParameter("floor_price");
 
-        File uploadFolder = new File(uploadPath);
+        Part imagePart =
+                request.getPart("product_image");
 
-        if (!uploadFolder.exists()) {
-            uploadFolder.mkdir();
+        String fileName = null;
+
+        if (imagePart != null) {
+
+            fileName =
+                    imagePart.getSubmittedFileName();
+        }
+
+        String uploadPath =
+                getServletContext().getRealPath("")
+                + File.separator
+                + "image";
+
+        File imageFolder =
+                new File(uploadPath);
+
+        if (!imageFolder.exists()) {
+
+            imageFolder.mkdirs();
         }
 
         String imageReference = null;
 
-        if (fileName != null && !fileName.isEmpty()) {
+        if (fileName != null &&
+                !fileName.trim().isEmpty()) {
 
-            String savedFileName = System.currentTimeMillis() + "_" + fileName;
+            fileName =
+                    new File(fileName)
+                            .getName();
 
-            imagePart.write(uploadPath + File.separator + savedFileName);
+            String savedFileName =
+                    fileName;
 
-            imageReference = "uploads/" + savedFileName;
+            File destination =
+                    new File(
+                            imageFolder,
+                            savedFileName
+                    );
+
+            imagePart.write(
+                    destination.getAbsolutePath()
+            );
+
+            imageReference =
+                    "image/" + savedFileName;
         }
 
-        String url = "jdbc:oracle:thin:@localhost:1521:xe";
-        String username = "system";
-        String dbPassword = "manager";
+        String url =
+                "jdbc:oracle:thin:@localhost:1521:xe";
 
-        String query = "INSERT INTO products "
-                + "(product_id, seller_id, name, description, image_reference, "
+        String username =
+                "system";
+
+        String dbPassword =
+                "manager";
+
+        String query =
+                "INSERT INTO products "
+                + "(product_id, seller_id, name, "
+                + "description, image_reference, "
                 + "start_price, floor_price, status) "
-                + "VALUES (product_seq.NEXTVAL, ?, ?, ?, ?, ?, ?, 'PENDING')";
+                + "VALUES "
+                + "(product_seq.NEXTVAL, ?, ?, ?, ?, ?, ?, 'PENDING')";
 
         try {
 
-            Class.forName("oracle.jdbc.OracleDriver");
+            Class.forName(
+                    "oracle.jdbc.OracleDriver"
+            );
 
-            Connection con = DriverManager.getConnection(
-                    url, username, dbPassword);
+            Connection con =
+                    DriverManager.getConnection(
+                            url,
+                            username,
+                            dbPassword
+                    );
 
-            PreparedStatement ps = con.prepareStatement(query);
+            PreparedStatement ps =
+                    con.prepareStatement(query);
 
-            ps.setInt(1, sellerId);
-            ps.setString(2, name);
-            ps.setString(3, description);
-            ps.setString(4, imageReference);
-            ps.setDouble(5, Double.parseDouble(startPrice));
+            ps.setInt(
+                    1,
+                    sellerId
+            );
 
-            if (floorPrice == null || floorPrice.trim().isEmpty()) {
-                ps.setNull(6, java.sql.Types.NUMERIC);
+            ps.setString(
+                    2,
+                    name
+            );
+
+            ps.setString(
+                    3,
+                    description
+            );
+
+            ps.setString(
+                    4,
+                    imageReference
+            );
+
+            ps.setDouble(
+                    5,
+                    Double.parseDouble(
+                            startPrice
+                    )
+            );
+
+            if (floorPrice == null ||
+                    floorPrice.trim().isEmpty()) {
+
+                ps.setNull(
+                        6,
+                        java.sql.Types.NUMERIC
+                );
+
             } else {
-                ps.setDouble(6, Double.parseDouble(floorPrice));
+
+                ps.setDouble(
+                        6,
+                        Double.parseDouble(
+                                floorPrice
+                        )
+                );
             }
 
             ps.executeUpdate();
@@ -94,7 +182,8 @@ public class ProductSubmitServlet extends HttpServlet {
             ps.close();
             con.close();
 
-            PrintWriter out = response.getWriter();
+            PrintWriter out =
+                    response.getWriter();
 
             out.println("<html>");
             out.println("<head>");
@@ -103,32 +192,67 @@ public class ProductSubmitServlet extends HttpServlet {
 
             out.println("<body>");
 
-            out.println("<h1>Product Submitted Successfully</h1>");
-            out.println("<p>Your product has been submitted for Admin approval.</p>");
-            out.println("<p>Status: PENDING</p>");
+            out.println(
+                    "<h1>Product Submitted Successfully</h1>"
+            );
+
+            out.println(
+                    "<p>Your product has been submitted for Admin approval.</p>"
+            );
+
+            out.println(
+                    "<p>Status: PENDING</p>"
+            );
 
             if (imageReference != null) {
-                out.println("<p>Product Image:</p>");
-                out.println("<img src=\"" + imageReference + "\" width=\"250\">");
+
+                out.println(
+                        "<p>Product Image:</p>"
+                );
+
+                out.println(
+                        "<img src=\""
+                        + imageReference
+                        + "\" width=\"250\">"
+                );
             }
 
             out.println("<br><br>");
-            out.println("<a href=\"product.html\">Submit Another Product</a>");
+
+            out.println(
+                    "<a href=\"product.html\">"
+                    + "Submit Another Product"
+                    + "</a>"
+            );
+
             out.println("<br><br>");
-            out.println("<a href=\"index.html\">Go to Home Page</a>");
+
+            out.println(
+                    "<a href=\"index.html\">"
+                    + "Go to Home Page"
+                    + "</a>"
+            );
 
             out.println("</body>");
             out.println("</html>");
 
         } catch (Exception e) {
 
-            PrintWriter out = response.getWriter();
+            PrintWriter out =
+                    response.getWriter();
 
             out.println("<html>");
             out.println("<body>");
 
-            out.println("<h1>Product Submission Failed</h1>");
-            out.println("<p>" + e.getMessage() + "</p>");
+            out.println(
+                    "<h1>Product Submission Failed</h1>"
+            );
+
+            out.println(
+                    "<p>"
+                    + e.getMessage()
+                    + "</p>"
+            );
 
             out.println("</body>");
             out.println("</html>");
@@ -136,16 +260,26 @@ public class ProductSubmitServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(
+            HttpServletRequest request,
+            HttpServletResponse response)
             throws ServletException, IOException {
 
-        processRequest(request, response);
+        processRequest(
+                request,
+                response
+        );
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(
+            HttpServletRequest request,
+            HttpServletResponse response)
             throws ServletException, IOException {
 
-        processRequest(request, response);
+        processRequest(
+                request,
+                response
+        );
     }
 }

@@ -1,7 +1,6 @@
 package eauction;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -20,9 +19,11 @@ public class AuctionDetailsServlet extends HttpServlet {
 
         response.setContentType("application/json;charset=UTF-8");
 
-        String auctionId = request.getParameter("auction_id");
+        String auctionId =
+                request.getParameter("auction_id");
 
-        if (auctionId == null || auctionId.trim().isEmpty()) {
+        if (auctionId == null ||
+                auctionId.trim().isEmpty()) {
 
             response.getWriter().write(
                     "{\"error\":\"Auction ID is required\"}"
@@ -31,28 +32,44 @@ public class AuctionDetailsServlet extends HttpServlet {
             return;
         }
 
-        String url = "jdbc:oracle:thin:@localhost:1521:xe";
-        String username = "system";
-        String dbPassword = "manager";
+        String url =
+                "jdbc:oracle:thin:@localhost:1521:xe";
+
+        String username =
+                "system";
+
+        String dbPassword =
+                "manager";
 
         try {
 
-            Class.forName("oracle.jdbc.OracleDriver");
+            Class.forName(
+                    "oracle.jdbc.OracleDriver"
+            );
 
-            try (Connection con = DriverManager.getConnection(
-                    url,
-                    username,
-                    dbPassword)) {
+            try (Connection con =
+                    DriverManager.getConnection(
+                            url,
+                            username,
+                            dbPassword)) {
 
                 String sql =
-                        "SELECT auction_id, "
-                        + "current_price, "
-                        + "start_time, "
-                        + "end_time, "
-                        + "status, "
-                        + "winner_id "
-                        + "FROM auctions "
-                        + "WHERE auction_id = ?";
+                        "SELECT "
+                        + "a.auction_id, "
+                        + "a.product_id, "
+                        + "a.current_price, "
+                        + "a.start_time, "
+                        + "a.end_time, "
+                        + "a.status, "
+                        + "a.winner_id, "
+                        + "p.name, "
+                        + "p.description, "
+                        + "p.image_reference, "
+                        + "p.start_price "
+                        + "FROM auctions a "
+                        + "JOIN products p "
+                        + "ON a.product_id = p.product_id "
+                        + "WHERE a.auction_id = ?";
 
                 try (PreparedStatement ps =
                         con.prepareStatement(sql)) {
@@ -77,16 +94,28 @@ public class AuctionDetailsServlet extends HttpServlet {
                         int id =
                                 rs.getInt("auction_id");
 
+                        int productId =
+                                rs.getInt("product_id");
+
                         double currentPrice =
-                                rs.getDouble("current_price");
+                                rs.getDouble(
+                                        "current_price"
+                                );
+
+                        double startPrice =
+                                rs.getDouble(
+                                        "start_price"
+                                );
 
                         String startTime =
-                                rs.getTimestamp("start_time")
-                                .toString();
+                                rs.getTimestamp(
+                                        "start_time"
+                                ).toString();
 
                         String endTime =
-                                rs.getTimestamp("end_time")
-                                .toString();
+                                rs.getTimestamp(
+                                        "end_time"
+                                ).toString();
 
                         String status =
                                 rs.getString("status");
@@ -94,20 +123,70 @@ public class AuctionDetailsServlet extends HttpServlet {
                         int winnerId =
                                 rs.getInt("winner_id");
 
+                        String name =
+                                rs.getString("name");
+
+                        String description =
+                                rs.getString(
+                                        "description"
+                                );
+
+                        String imageReference =
+                                rs.getString(
+                                        "image_reference"
+                                );
+
                         String json =
                                 "{"
-                                + "\"auction_id\":" + id + ","
-                                + "\"current_price\":" + currentPrice + ","
-                                + "\"start_time\":\"" + startTime + "\","
-                                + "\"end_time\":\"" + endTime + "\","
-                                + "\"status\":\"" + status + "\","
-                                + "\"winner_id\":" + winnerId
+                                + "\"auction_id\":"
+                                + id
+                                + ","
+
+                                + "\"product_id\":"
+                                + productId
+                                + ","
+
+                                + "\"name\":\""
+                                + escapeJson(name)
+                                + "\","
+
+                                + "\"description\":\""
+                                + escapeJson(description)
+                                + "\","
+
+                                + "\"image_reference\":\""
+                                + escapeJson(
+                                        imageReference
+                                )
+                                + "\","
+
+                                + "\"start_price\":"
+                                + startPrice
+                                + ","
+
+                                + "\"current_price\":"
+                                + currentPrice
+                                + ","
+
+                                + "\"start_time\":\""
+                                + startTime
+                                + "\","
+
+                                + "\"end_time\":\""
+                                + endTime
+                                + "\","
+
+                                + "\"status\":\""
+                                + escapeJson(status)
+                                + "\","
+
+                                + "\"winner_id\":"
+                                + winnerId
+
                                 + "}";
 
-                        PrintWriter out =
-                                response.getWriter();
-
-                        out.write(json);
+                        response.getWriter()
+                                .write(json);
                     }
                 }
             }
@@ -122,11 +201,23 @@ public class AuctionDetailsServlet extends HttpServlet {
 
             response.getWriter().write(
                     "{\"error\":\""
-                    + e.getMessage()
-                    .replace("\"", "\\\"")
+                    + escapeJson(e.getMessage())
                     + "\"}"
             );
         }
+    }
+
+    private String escapeJson(String value) {
+
+        if (value == null) {
+            return "";
+        }
+
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "\\r")
+                .replace("\n", "\\n");
     }
 
     @Override
@@ -135,7 +226,10 @@ public class AuctionDetailsServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        processRequest(request, response);
+        processRequest(
+                request,
+                response
+        );
     }
 
     @Override
@@ -144,6 +238,9 @@ public class AuctionDetailsServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        processRequest(request, response);
+        processRequest(
+                request,
+                response
+        );
     }
 }

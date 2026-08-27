@@ -10,110 +10,124 @@
 
     <h1>Live Auction</h1>
 
-    <table>
+    <p id="auctionLoading">
+        Loading auction...
+    </p>
 
-        <tr>
-            <td>Auction ID</td>
-            <td>
-                <input type="number"
-                       id="auctionId"
-                       value="1"
-                       required>
-            </td>
-        </tr>
+    <div id="auctionContent" style="display:none;">
 
-        <tr>
-            <td>Current Price</td>
-            <td>
-                <input type="number"
-                       id="currentPrice"
-                       value="0"
-                       readonly>
-            </td>
-        </tr>
+        <div>
+            <img id="productImage"
+                 src=""
+                 alt="Product Image"
+                 width="400">
+        </div>
 
-        <tr>
-            <td>Bid Amount</td>
-            <td>
+        <h2 id="productName"></h2>
+
+        <p id="productDescription"></p>
+
+        <p>
+            <strong>Starting Price:</strong>
+            ₹<span id="startPrice"></span>
+        </p>
+
+        <p>
+            <strong>Current Price:</strong>
+            ₹<span id="currentPrice"></span>
+        </p>
+
+        <p>
+            <strong>Time Remaining:</strong>
+            <span id="countdown">Calculating...</span>
+        </p>
+
+        <p>
+            <strong>Start Time:</strong>
+            <span id="startTime"></span>
+        </p>
+
+        <p>
+            <strong>End Time:</strong>
+            <span id="endTime"></span>
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            <span id="auctionStatus"></span>
+        </p>
+
+
+        <div id="biddingSection">
+
+            <h2>Place Bid</h2>
+
+            <p>
                 <input type="number"
                        id="bidAmount"
                        step="0.01"
                        min="0"
-                       required>
-            </td>
-        </tr>
+                       placeholder="Enter bid amount">
+            </p>
 
-        <tr>
-            <td>
+            <p>
                 <button type="button"
                         onclick="placeBid()">
                     PLACE BID
                 </button>
-            </td>
 
-            <td>
                 <button type="button"
                         onclick="resetBid()">
                     RESET
                 </button>
-            </td>
-        </tr>
+            </p>
 
-    </table>
 
-    <h2>Quick Bid</h2>
+            <h2>Quick Bid</h2>
 
-    <div id="quickBids">
+            <div id="quickBids">
 
-        <button type="button"
-                onclick="placeQuickBid(2)">
-            +2%
-        </button>
+                <button type="button"
+                        id="quickBid2"
+                        onclick="placeQuickBid(2)">
+                    ₹0
+                </button>
 
-        <button type="button"
-                onclick="placeQuickBid(5)">
-            +5%
-        </button>
+                <button type="button"
+                        id="quickBid5"
+                        onclick="placeQuickBid(5)">
+                    ₹0
+                </button>
 
-        <button type="button"
-                onclick="placeQuickBid(10)">
-            +10%
-        </button>
+                <button type="button"
+                        id="quickBid10"
+                        onclick="placeQuickBid(10)">
+                    ₹0
+                </button>
 
-        <button type="button"
-                onclick="placeQuickBid(20)">
-            +20%
-        </button>
+                <button type="button"
+                        id="quickBid20"
+                        onclick="placeQuickBid(20)">
+                    ₹0
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <h3>Latest Update</h3>
+
+        <p id="latestUpdate">
+            Waiting for auction updates...
+        </p>
 
     </div>
 
-    <h3>Quick Bid Values</h3>
-
-    <div id="quickBidValues">
-        Loading...
-    </div>
-
-    <h3>Auction Status</h3>
-
-    <p id="auctionStatus">
-        Loading...
-    </p>
-
-    <h3>WebSocket</h3>
-
-    <p id="connectionStatus">
-        Connecting...
-    </p>
-
-    <h3>Latest Update</h3>
-
-    <p id="latestUpdate">
-        Waiting for auction updates...
-    </p>
 
     <p>
         <a href="index.html">
-            Go to Home Page
+            Back to Dashboard
         </a>
     </p>
 
@@ -121,81 +135,288 @@
     <script>
 
         let currentPrice = 0;
-
+        let auctionId = null;
         let socket = null;
+        let auctionEndTime = null;
+        let auctionStatus = null;
+
+
+        function getAuctionIdFromUrl() {
+
+            const params =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+            return params.get("auction_id");
+        }
 
 
         function loadAuctionDetails() {
 
-            const auctionId =
-                document.getElementById("auctionId").value;
+            auctionId =
+                getAuctionIdFromUrl();
 
-            fetch("auction-details?auction_id=" + auctionId)
 
-                .then(response => response.json())
+            if (!auctionId) {
 
-                .then(data => {
+                document.getElementById(
+                    "auctionLoading"
+                ).innerText =
+                    "Auction not specified.";
 
-                    if (data.error) {
+                return;
+            }
 
-                        document.getElementById("auctionStatus")
-                            .innerText = data.error;
 
-                        return;
-                    }
+            fetch(
+                "auction-details?auction_id="
+                + encodeURIComponent(
+                    auctionId
+                )
+            )
 
-                    currentPrice =
-                        parseFloat(data.current_price);
+            .then(response =>
+                response.json()
+            )
 
-                    document.getElementById("currentPrice")
-                        .value = currentPrice;
+            .then(data => {
 
-                    document.getElementById("auctionStatus")
-                        .innerText =
-                        "Auction Status: " + data.status;
+                if (data.error) {
 
-                    updateQuickBidValues();
+                    document.getElementById(
+                        "auctionLoading"
+                    ).innerText =
+                        data.error;
 
-                })
+                    return;
+                }
 
-                .catch(error => {
 
-                    document.getElementById("auctionStatus")
-                        .innerText =
-                        "Unable to load auction details.";
+                currentPrice =
+                    parseFloat(
+                        data.current_price
+                    );
 
-                    console.error(error);
-                });
+                auctionEndTime =
+                    data.end_time;
+
+                auctionStatus =
+                    data.status;
+
+
+                document.getElementById(
+                    "productName"
+                ).innerText =
+                    data.name;
+
+
+                document.getElementById(
+                    "productDescription"
+                ).innerText =
+                    data.description;
+
+
+                document.getElementById(
+                    "startPrice"
+                ).innerText =
+                    Number(
+                        data.start_price
+                    ).toLocaleString(
+                        "en-IN"
+                    );
+
+
+                document.getElementById(
+                    "currentPrice"
+                ).innerText =
+                    Number(
+                        currentPrice
+                    ).toLocaleString(
+                        "en-IN"
+                    );
+
+
+                document.getElementById(
+                    "startTime"
+                ).innerText =
+                    formatDate(
+                        data.start_time
+                    );
+
+
+                document.getElementById(
+                    "endTime"
+                ).innerText =
+                    formatDate(
+                        data.end_time
+                    );
+
+
+                document.getElementById(
+                    "auctionStatus"
+                ).innerText =
+                    data.status;
+
+
+                if (data.image_reference) {
+
+                    document.getElementById(
+                        "productImage"
+                    ).src =
+                        data.image_reference;
+
+                }
+
+
+                updateBiddingSection();
+
+
+                document.getElementById(
+                    "auctionLoading"
+                ).style.display =
+                    "none";
+
+
+                document.getElementById(
+                    "auctionContent"
+                ).style.display =
+                    "block";
+
+
+                if (auctionStatus === "LIVE") {
+
+                    updateQuickBids();
+
+                }
+
+
+                startCountdown(
+                    auctionEndTime
+                );
+
+            })
+
+            .catch(error => {
+
+                console.error(
+                    "Auction loading error:",
+                    error
+                );
+
+                document.getElementById(
+                    "auctionLoading"
+                ).innerText =
+                    "Unable to load auction.";
+
+            });
+
         }
 
 
-        function updateQuickBidValues() {
+        function updateBiddingSection() {
 
-            const percentages = [2, 5, 10, 20];
-
-            const container =
-                document.getElementById("quickBidValues");
-
-            container.innerHTML = "";
-
-            percentages.forEach(function(percent) {
-
-                const amount = Math.ceil(
-                    currentPrice *
-                    (1 + percent / 100)
+            const biddingSection =
+                document.getElementById(
+                    "biddingSection"
                 );
 
-                container.innerHTML +=
-                    "+" + percent +
-                    "% = &#8377;" +
-                    amount +
-                    "<br>";
 
-            });
+            if (auctionStatus === "LIVE") {
+
+                biddingSection.style.display =
+                    "block";
+
+            } else {
+
+                biddingSection.style.display =
+                    "none";
+
+            }
+
+        }
+
+
+        function calculateQuickBid(percent) {
+
+            return Number(
+                (
+                    currentPrice *
+                    (1 + percent / 100)
+                ).toFixed(2)
+            );
+
+        }
+
+
+        function updateQuickBids() {
+
+            if (
+                currentPrice <= 0 ||
+                auctionStatus !== "LIVE"
+            ) {
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "quickBid2"
+            ).innerText =
+                "₹"
+                + calculateQuickBid(
+                    2
+                ).toLocaleString(
+                    "en-IN"
+                );
+
+
+            document.getElementById(
+                "quickBid5"
+            ).innerText =
+                "₹"
+                + calculateQuickBid(
+                    5
+                ).toLocaleString(
+                    "en-IN"
+                );
+
+
+            document.getElementById(
+                "quickBid10"
+            ).innerText =
+                "₹"
+                + calculateQuickBid(
+                    10
+                ).toLocaleString(
+                    "en-IN"
+                );
+
+
+            document.getElementById(
+                "quickBid20"
+            ).innerText =
+                "₹"
+                + calculateQuickBid(
+                    20
+                ).toLocaleString(
+                    "en-IN"
+                );
+
         }
 
 
         function placeQuickBid(percent) {
+
+            if (
+                auctionStatus !== "LIVE"
+            ) {
+
+                return;
+
+            }
+
 
             if (currentPrice <= 0) {
 
@@ -206,50 +427,80 @@
                 return;
             }
 
-            const amount = Math.ceil(
-                currentPrice *
-                (1 + percent / 100)
-            );
 
-            document.getElementById("bidAmount")
-                .value = amount;
+            const amount =
+                calculateQuickBid(
+                    percent
+                );
+
+
+            document.getElementById(
+                "bidAmount"
+            ).value =
+                amount;
+
         }
 
 
         function resetBid() {
 
-            document.getElementById("bidAmount")
-                .value = "";
+            document.getElementById(
+                "bidAmount"
+            ).value = "";
 
         }
 
 
         function placeBid() {
 
-            const auctionId =
-                document.getElementById("auctionId")
-                    .value;
-
-            const amount =
-                document.getElementById("bidAmount")
-                    .value;
-
-            if (!auctionId || !amount) {
+            if (
+                auctionStatus !== "LIVE"
+            ) {
 
                 alert(
-                    "Enter auction ID and bid amount."
+                    "This auction is not live."
+                );
+
+                return;
+
+            }
+
+
+            const amount =
+                document.getElementById(
+                    "bidAmount"
+                ).value;
+
+
+            if (!auctionId) {
+
+                alert(
+                    "Auction not specified."
                 );
 
                 return;
             }
 
+
+            if (!amount) {
+
+                alert(
+                    "Enter a bid amount."
+                );
+
+                return;
+            }
+
+
             const formData =
                 new URLSearchParams();
+
 
             formData.append(
                 "auction_id",
                 auctionId
             );
+
 
             formData.append(
                 "amount",
@@ -257,20 +508,24 @@
             );
 
 
-            fetch("placeBid", {
+            fetch(
+                "placeBid",
+                {
+                    method: "POST",
 
-                method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/x-www-form-urlencoded"
+                    },
 
-                headers: {
-                    "Content-Type":
-                        "application/x-www-form-urlencoded"
-                },
+                    body:
+                        formData.toString()
+                }
+            )
 
-                body: formData.toString()
-
-            })
-
-            .then(response => response.text())
+            .then(response =>
+                response.text()
+            )
 
             .then(data => {
 
@@ -290,9 +545,119 @@
                 ).innerText =
                     "Bid request failed.";
 
-                console.error(error);
+                console.error(
+                    "Bid error:",
+                    error
+                );
 
             });
+
+        }
+
+
+        function startCountdown(endTime) {
+
+            function update() {
+
+                const now =
+                    new Date();
+
+                const end =
+                    new Date(
+                        endTime.replace(
+                            " ",
+                            "T"
+                        )
+                    );
+
+
+                const difference =
+                    end.getTime()
+                    - now.getTime();
+
+
+                const countdown =
+                    document.getElementById(
+                        "countdown"
+                    );
+
+
+                if (difference <= 0) {
+
+                    countdown.innerText =
+                        "Auction ended";
+
+                    return;
+                }
+
+
+                countdown.innerText =
+                    "⏱ "
+                    + formatDuration(
+                        difference
+                    );
+
+            }
+
+
+            update();
+
+
+            setInterval(
+                update,
+                1000
+            );
+
+        }
+
+
+        function formatDuration(
+            milliseconds
+        ) {
+
+            let seconds =
+                Math.floor(
+                    milliseconds / 1000
+                );
+
+
+            const days =
+                Math.floor(
+                    seconds / 86400
+                );
+
+            seconds %= 86400;
+
+
+            const hours =
+                Math.floor(
+                    seconds / 3600
+                );
+
+            seconds %= 3600;
+
+
+            const minutes =
+                Math.floor(
+                    seconds / 60
+                );
+
+            seconds %= 60;
+
+
+            return (
+                (days > 0
+                    ? days + "d "
+                    : "")
+                + String(hours)
+                    .padStart(2, "0")
+                + ":"
+                + String(minutes)
+                    .padStart(2, "0")
+                + ":"
+                + String(seconds)
+                    .padStart(2, "0")
+            );
 
         }
 
@@ -300,140 +665,184 @@
         function connectWebSocket() {
 
             const protocol =
-                window.location.protocol === "https:"
+                window.location.protocol ===
+                "https:"
                 ? "wss:"
                 : "ws:";
 
+
             const socketUrl =
-                protocol +
-                "//" +
-                window.location.host +
-                window.location.pathname
+                protocol
+                + "//"
+                + window.location.host
+                + window.location.pathname
                     .substring(
                         0,
                         window.location.pathname
                             .lastIndexOf("/")
-                    ) +
-                "/auctionSocket";
+                    )
+                + "/auctionSocket";
 
 
             socket =
-                new WebSocket(socketUrl);
+                new WebSocket(
+                    socketUrl
+                );
 
 
-            socket.onopen = function() {
+            socket.onopen =
+                function() {
 
-                document.getElementById(
-                    "connectionStatus"
-                ).innerText =
-                    "CONNECTED";
+                    console.log(
+                        "WebSocket connected."
+                    );
 
-            };
-
-
-            socket.onmessage = function(event) {
-
-                try {
-
-                    const data =
-                        JSON.parse(event.data);
+                };
 
 
-                    const selectedAuction =
-                        parseInt(
-                            document.getElementById(
-                                "auctionId"
-                            ).value
-                        );
+            socket.onmessage =
+                function(event) {
 
+                    try {
 
-                    if (
-                        data.auction_id !==
-                        selectedAuction
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    if (
-                        data.type ===
-                        "BID_UPDATE"
-                    ) {
-
-                        currentPrice =
-                            parseFloat(
-                                data.current_price
+                        const data =
+                            JSON.parse(
+                                event.data
                             );
 
 
-                        document.getElementById(
-                            "currentPrice"
-                        ).value =
-                            currentPrice;
+                        if (
+                            parseInt(
+                                data.auction_id
+                            ) !==
+                            parseInt(
+                                auctionId
+                            )
+                        ) {
+
+                            return;
+                        }
 
 
-                        updateQuickBidValues();
+                        if (
+                            data.type ===
+                            "BID_UPDATE"
+                        ) {
+
+                            currentPrice =
+                                parseFloat(
+                                    data.current_price
+                                );
 
 
-                        document.getElementById(
-                            "latestUpdate"
-                        ).innerText =
-                            "New bid: ₹"
-                            + currentPrice
-                            + " | Winner ID: "
-                            + data.winner_id;
+                            if (data.end_time) {
+
+                                auctionEndTime =
+                                    data.end_time;
+
+                            }
 
 
-                        if (data.extended) {
+                            document.getElementById(
+                                "currentPrice"
+                            ).innerText =
+                                Number(
+                                    currentPrice
+                                ).toLocaleString(
+                                    "en-IN"
+                                );
+
+
+                            updateQuickBids();
+
 
                             document.getElementById(
                                 "latestUpdate"
-                            ).innerText +=
-                                " | Auction extended by "
-                                + data.extension_seconds
-                                + " seconds.";
+                            ).innerText =
+                                "New bid: ₹"
+                                + Number(
+                                    currentPrice
+                                ).toLocaleString(
+                                    "en-IN"
+                                );
+
+
+                            if (data.extended) {
+
+                                document.getElementById(
+                                    "latestUpdate"
+                                ).innerText +=
+                                    " | Auction extended by "
+                                    + data.extension_seconds
+                                    + " seconds.";
+
+                            }
 
                         }
 
+                    } catch (error) {
+
+                        console.error(
+                            "WebSocket message error:",
+                            error
+                        );
+
                     }
 
-                } catch (error) {
+                };
+
+
+            socket.onclose =
+                function() {
+
+                    console.log(
+                        "WebSocket disconnected."
+                    );
+
+                };
+
+
+            socket.onerror =
+                function(error) {
 
                     console.error(
-                        "WebSocket message error:",
+                        "WebSocket error:",
                         error
                     );
 
-                }
+                };
 
-            };
-
-
-            socket.onclose = function() {
-
-                document.getElementById(
-                    "connectionStatus"
-                ).innerText =
-                    "DISCONNECTED";
-
-            };
+        }
 
 
-            socket.onerror = function(error) {
+        function formatDate(dateString) {
 
-                document.getElementById(
-                    "connectionStatus"
-                ).innerText =
-                    "ERROR";
-
-                console.error(
-                    "WebSocket error:",
-                    error
+            const date =
+                new Date(
+                    dateString.replace(
+                        " ",
+                        "T"
+                    )
                 );
 
-            };
+
+            if (
+                isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return dateString;
+            }
+
+
+            return date.toLocaleString(
+                "en-IN",
+                {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                }
+            );
 
         }
 

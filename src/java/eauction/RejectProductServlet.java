@@ -9,87 +9,230 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 public class RejectProductServlet extends HttpServlet {
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    protected void processRequest(
+            HttpServletRequest request,
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType("text/html;charset=UTF-8");
 
-        String productId = request.getParameter("product_id");
+        HttpSession session =
+                request.getSession(false);
 
-        String url = "jdbc:oracle:thin:@localhost:1521:xe";
-        String username = "system";
-        String dbPassword = "manager";
+        if (session == null ||
+                session.getAttribute("user_id") == null) {
 
-        String query = "UPDATE products "
+            response.sendRedirect("login.html");
+            return;
+        }
+
+        Object role =
+                session.getAttribute("role");
+
+        if (role == null ||
+                !"ADMIN".equals(role.toString())) {
+
+            response.setStatus(
+                    HttpServletResponse.SC_FORBIDDEN
+            );
+
+            PrintWriter out =
+                    response.getWriter();
+
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<meta charset='UTF-8'>");
+            out.println("<title>Access Denied</title>");
+            out.println("</head>");
+
+            out.println("<body>");
+
+            out.println("<h1>Access Denied</h1>");
+
+            out.println(
+                    "<p>Only the Admin can reject products.</p>"
+            );
+
+            out.println("<br>");
+
+            out.println(
+                    "<a href='index.html'>"
+                    + "Go to Dashboard"
+                    + "</a>"
+            );
+
+            out.println("</body>");
+            out.println("</html>");
+
+            return;
+        }
+
+        String productId =
+                request.getParameter("product_id");
+
+        if (productId == null ||
+                productId.trim().isEmpty()) {
+
+            showMessage(
+                    response,
+                    "Rejection Failed",
+                    "Product ID is required."
+            );
+
+            return;
+        }
+
+        String url =
+                "jdbc:oracle:thin:@localhost:1521:xe";
+
+        String username =
+                "system";
+
+        String dbPassword =
+                "manager";
+
+        String query =
+                "UPDATE products "
                 + "SET status = 'REJECTED' "
                 + "WHERE product_id = ? "
                 + "AND status = 'PENDING'";
 
         try {
-            Class.forName("oracle.jdbc.OracleDriver");
 
-            Connection con = DriverManager.getConnection(
-                    url, username, dbPassword);
+            Class.forName(
+                    "oracle.jdbc.OracleDriver"
+            );
 
-            PreparedStatement ps = con.prepareStatement(query);
+            try (
+                Connection con =
+                        DriverManager.getConnection(
+                                url,
+                                username,
+                                dbPassword
+                        );
 
-            ps.setInt(1, Integer.parseInt(productId));
+                PreparedStatement ps =
+                        con.prepareStatement(query)
+            ) {
 
-            int rows = ps.executeUpdate();
+                ps.setInt(
+                        1,
+                        Integer.parseInt(productId)
+                );
 
-            ps.close();
-            con.close();
+                int rows =
+                        ps.executeUpdate();
 
-            PrintWriter out = response.getWriter();
+                if (rows > 0) {
 
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Product Rejection</title>");
-            out.println("</head>");
-            out.println("<body>");
+                    showMessage(
+                            response,
+                            "Product Rejected Successfully",
+                            "Product ID: "
+                            + productId
+                            + "<br>Status: REJECTED"
+                    );
 
-            if (rows > 0) {
-                out.println("<h1>Product Rejected Successfully</h1>");
-                out.println("<p>Product ID: " + productId + "</p>");
-                out.println("<p>Status: REJECTED</p>");
-            } else {
-                out.println("<h1>Product Rejection Failed</h1>");
-                out.println("<p>Product was not found or is no longer pending.</p>");
+                } else {
+
+                    showMessage(
+                            response,
+                            "Product Rejection Failed",
+                            "Product was not found or is no longer pending."
+                    );
+                }
             }
 
-            out.println("<br>");
-            out.println("<a href='admin-products'>Back to Admin Products</a>");
+        } catch (NumberFormatException e) {
 
-            out.println("</body>");
-            out.println("</html>");
+            showMessage(
+                    response,
+                    "Rejection Failed",
+                    "Invalid Product ID."
+            );
 
         } catch (Exception e) {
 
-            PrintWriter out = response.getWriter();
-
-            out.println("<html>");
-            out.println("<body>");
-
-            out.println("<h1>Product Rejection Error</h1>");
-            out.println("<p>" + e.getMessage() + "</p>");
-
-            out.println("</body>");
-            out.println("</html>");
+            showMessage(
+                    response,
+                    "Product Rejection Error",
+                    e.getMessage()
+            );
         }
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
+    private void showMessage(
+            HttpServletResponse response,
+            String title,
+            String message)
+            throws IOException {
+
+        PrintWriter out =
+                response.getWriter();
+
+        out.println("<html>");
+        out.println("<head>");
+        out.println("<meta charset='UTF-8'>");
+        out.println("<title>"
+                + title
+                + "</title>");
+        out.println("</head>");
+
+        out.println("<body>");
+
+        out.println("<h1>"
+                + title
+                + "</h1>");
+
+        out.println("<p>"
+                + message
+                + "</p>");
+
+        out.println("<br>");
+
+        out.println(
+                "<a href='admin-products'>"
+                + "Back to Admin Products"
+                + "</a>"
+        );
+
+        out.println("<br><br>");
+
+        out.println(
+                "<a href='index.html'>"
+                + "Go to Dashboard"
+                + "</a>"
+        );
+
+        out.println("</body>");
+        out.println("</html>");
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(
+            HttpServletRequest request,
+            HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+
+        processRequest(
+                request,
+                response
+        );
+    }
+
+    @Override
+    protected void doPost(
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+
+        processRequest(
+                request,
+                response
+        );
     }
 }

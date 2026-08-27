@@ -32,11 +32,6 @@
             text-align: right;
         }
 
-        #logoutLink {
-            color: white;
-            text-decoration: none;
-        }
-
         nav {
             background: white;
             padding: 15px;
@@ -49,6 +44,10 @@
             text-decoration: none;
             font-weight: bold;
             color: #333;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
         }
 
         main {
@@ -65,6 +64,48 @@
         section h2 {
             border-bottom: 2px solid #333;
             padding-bottom: 10px;
+        }
+
+        .sell-section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 40px;
+            border: 1px solid #ddd;
+        }
+
+        .sell-button {
+            display: inline-block;
+            padding: 12px 20px;
+            background: #222;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .sell-button:hover {
+            background: #444;
+        }
+
+        .admin-section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 40px;
+            border: 1px solid #ddd;
+        }
+
+        .admin-link {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            background: #222;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .admin-link:hover {
+            background: #444;
         }
 
         .auction-grid {
@@ -167,6 +208,10 @@
 
 <nav>
 
+    <a href="#sell">
+        Sell a Product
+    </a>
+
     <a href="#live">
         Live Bidding
     </a>
@@ -179,10 +224,63 @@
         Sold Bidding
     </a>
 
+    <a href="#admin">
+        Admin
+    </a>
+
 </nav>
 
 
 <main>
+
+
+    <section id="sell" class="sell-section">
+
+        <h2>
+            Sell / Put Product for Bidding
+        </h2>
+
+        <p>
+            Want to sell a product?
+            Submit it for Admin approval and put it up for auction.
+        </p>
+
+        <a
+            href="product.html"
+            class="sell-button">
+            SELL A PRODUCT
+        </a>
+
+    </section>
+
+
+    <section
+        id="admin"
+        class="admin-section"
+        style="display:none;">
+
+        <h2>
+            Admin Controls
+        </h2>
+
+        <p>
+            Only the Admin can access these controls.
+        </p>
+
+        <a
+            href="admin-products"
+            class="admin-link">
+            PRODUCT APPROVAL
+        </a>
+
+        <a
+            href="schedule-auction.html"
+            class="admin-link">
+            SCHEDULE AUCTION
+        </a>
+
+    </section>
+
 
     <section id="live">
 
@@ -234,6 +332,7 @@
 
     </section>
 
+
 </main>
 
 
@@ -264,17 +363,37 @@
                         "userSection"
                     );
 
-                if (data.loggedIn) {
+                const adminSection =
+                    document.getElementById(
+                        "admin"
+                    );
 
-                    userSection.innerHTML =
-                        "<strong>Hi "
-                        + data.userName
-                        + "</strong>";
 
-                } else {
+                if (!data.loggedIn) {
 
                     window.location.href =
                         "login.html";
+
+                    return;
+
+                }
+
+
+                userSection.innerHTML =
+                    "<strong>Hi "
+                    + data.userName
+                    + "</strong>";
+
+
+                if (data.role === "ADMIN") {
+
+                    adminSection.style.display =
+                        "block";
+
+                } else {
+
+                    adminSection.style.display =
+                        "none";
 
                 }
 
@@ -286,6 +405,9 @@
                     "Session error:",
                     error
                 );
+
+                window.location.href =
+                    "login.html";
 
             });
 
@@ -328,6 +450,28 @@
     }
 
 
+    function getImageUrl(imageReference) {
+
+        if (!imageReference) {
+            return "";
+        }
+
+        if (
+            imageReference.startsWith("http://") ||
+            imageReference.startsWith("https://")
+        ) {
+            return imageReference;
+        }
+
+        if (imageReference.startsWith("/")) {
+            return imageReference;
+        }
+
+        return imageReference;
+
+    }
+
+
     function createAuctionCard(auction) {
 
         const card =
@@ -341,10 +485,16 @@
             document.createElement("img");
 
 
-        if (auction.imageReference) {
+        const imageUrl =
+            getImageUrl(
+                auction.imageReference
+            );
+
+
+        if (imageUrl) {
 
             image.src =
-                auction.imageReference;
+                imageUrl;
 
             image.alt =
                 auction.name;
@@ -359,7 +509,8 @@
 
         image.onerror = function () {
 
-            this.style.display = "none";
+            this.style.display =
+                "none";
 
         };
 
@@ -492,7 +643,7 @@
             "view-button";
 
         button.href =
-            "auction-details?auction_id="
+            "auction.html?auction_id="
             + encodeURIComponent(
                 auction.auctionId
             );
@@ -558,43 +709,50 @@
         let soldCount = 0;
 
 
-        auctions.forEach(auction => {
+        auctions.forEach(
+            function(auction) {
 
-            const card =
-                createAuctionCard(
-                    auction
-                );
+                const card =
+                    createAuctionCard(
+                        auction
+                    );
 
 
-            if (auction.status === "LIVE") {
+                if (
+                    auction.status ===
+                    "LIVE"
+                ) {
 
-                live.appendChild(card);
+                    live.appendChild(card);
 
-                liveCount++;
+                    liveCount++;
+
+                }
+
+                else if (
+                    auction.status ===
+                    "SCHEDULED"
+                ) {
+
+                    upcoming.appendChild(card);
+
+                    upcomingCount++;
+
+                }
+
+                else if (
+                    auction.status ===
+                    "SOLD"
+                ) {
+
+                    sold.appendChild(card);
+
+                    soldCount++;
+
+                }
 
             }
-
-            else if (
-                auction.status === "SCHEDULED"
-            ) {
-
-                upcoming.appendChild(card);
-
-                upcomingCount++;
-
-            }
-
-            else if (
-                auction.status === "SOLD"
-            ) {
-
-                sold.appendChild(card);
-
-                soldCount++;
-
-            }
-
-        });
+        );
 
 
         if (liveCount === 0) {
@@ -820,6 +978,7 @@
     loadAuctions();
 
 </script>
+
 
 </body>
 
