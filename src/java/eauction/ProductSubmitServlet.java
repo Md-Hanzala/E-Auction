@@ -17,12 +17,17 @@ import jakarta.servlet.http.Part;
 @MultipartConfig
 public class ProductSubmitServlet extends HttpServlet {
 
+    private static final String UPLOAD_DIRECTORY =
+            "D:\\E-Auction\\uploads";
+
     protected void processRequest(
             HttpServletRequest request,
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType(
+                "text/html;charset=UTF-8"
+        );
 
         HttpSession session =
                 request.getSession(false);
@@ -35,7 +40,9 @@ public class ProductSubmitServlet extends HttpServlet {
         }
 
         int sellerId =
-                (Integer) session.getAttribute("user_id");
+                (Integer) session.getAttribute(
+                        "user_id"
+                );
 
         String name =
                 request.getParameter("name");
@@ -52,51 +59,48 @@ public class ProductSubmitServlet extends HttpServlet {
         Part imagePart =
                 request.getPart("product_image");
 
-        String fileName = null;
-
-        if (imagePart != null) {
-
-            fileName =
-                    imagePart.getSubmittedFileName();
-        }
-
-        String uploadPath =
-                getServletContext().getRealPath("")
-                + File.separator
-                + "image";
+        String imageReference = null;
 
         File imageFolder =
-                new File(uploadPath);
+                new File(UPLOAD_DIRECTORY);
 
         if (!imageFolder.exists()) {
 
             imageFolder.mkdirs();
         }
 
-        String imageReference = null;
+        if (imagePart != null) {
 
-        if (fileName != null &&
-                !fileName.trim().isEmpty()) {
+            String originalFileName =
+                    imagePart.getSubmittedFileName();
 
-            fileName =
-                    new File(fileName)
-                            .getName();
+            if (originalFileName != null &&
+                    !originalFileName.trim().isEmpty()) {
 
-            String savedFileName =
-                    fileName;
+                originalFileName =
+                        new File(
+                                originalFileName
+                        ).getName();
 
-            File destination =
-                    new File(
-                            imageFolder,
-                            savedFileName
-                    );
+                String uniqueFileName =
+                        System.currentTimeMillis()
+                        + "_"
+                        + originalFileName;
 
-            imagePart.write(
-                    destination.getAbsolutePath()
-            );
+                File destination =
+                        new File(
+                                imageFolder,
+                                uniqueFileName
+                        );
 
-            imageReference =
-                    "image/" + savedFileName;
+                imagePart.write(
+                        destination.getAbsolutePath()
+                );
+
+                imageReference =
+                        "/uploads/"
+                        + uniqueFileName;
+            }
         }
 
         String url =
@@ -122,72 +126,77 @@ public class ProductSubmitServlet extends HttpServlet {
                     "oracle.jdbc.OracleDriver"
             );
 
-            Connection con =
-                    DriverManager.getConnection(
-                            url,
-                            username,
-                            dbPassword
-                    );
+            try (
+                Connection con =
+                        DriverManager.getConnection(
+                                url,
+                                username,
+                                dbPassword
+                        );
 
-            PreparedStatement ps =
-                    con.prepareStatement(query);
+                PreparedStatement ps =
+                        con.prepareStatement(query)
+            ) {
 
-            ps.setInt(
-                    1,
-                    sellerId
-            );
-
-            ps.setString(
-                    2,
-                    name
-            );
-
-            ps.setString(
-                    3,
-                    description
-            );
-
-            ps.setString(
-                    4,
-                    imageReference
-            );
-
-            ps.setDouble(
-                    5,
-                    Double.parseDouble(
-                            startPrice
-                    )
-            );
-
-            if (floorPrice == null ||
-                    floorPrice.trim().isEmpty()) {
-
-                ps.setNull(
-                        6,
-                        java.sql.Types.NUMERIC
+                ps.setInt(
+                        1,
+                        sellerId
                 );
 
-            } else {
+                ps.setString(
+                        2,
+                        name
+                );
+
+                ps.setString(
+                        3,
+                        description
+                );
+
+                ps.setString(
+                        4,
+                        imageReference
+                );
 
                 ps.setDouble(
-                        6,
+                        5,
                         Double.parseDouble(
-                                floorPrice
+                                startPrice
                         )
                 );
+
+                if (floorPrice == null ||
+                        floorPrice.trim().isEmpty()) {
+
+                    ps.setNull(
+                            6,
+                            java.sql.Types.NUMERIC
+                    );
+
+                } else {
+
+                    ps.setDouble(
+                            6,
+                            Double.parseDouble(
+                                    floorPrice
+                            )
+                    );
+                }
+
+                ps.executeUpdate();
             }
-
-            ps.executeUpdate();
-
-            ps.close();
-            con.close();
 
             PrintWriter out =
                     response.getWriter();
 
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Product Submitted</title>");
+            out.println(
+                    "<meta charset='UTF-8'>"
+            );
+            out.println(
+                    "<title>Product Submitted</title>"
+            );
             out.println("</head>");
 
             out.println("<body>");
@@ -197,7 +206,8 @@ public class ProductSubmitServlet extends HttpServlet {
             );
 
             out.println(
-                    "<p>Your product has been submitted for Admin approval.</p>"
+                    "<p>Your product has been submitted "
+                    + "for Admin approval.</p>"
             );
 
             out.println(
@@ -211,16 +221,16 @@ public class ProductSubmitServlet extends HttpServlet {
                 );
 
                 out.println(
-                        "<img src=\""
+                        "<img src='"
                         + imageReference
-                        + "\" width=\"250\">"
+                        + "' width='250'>"
                 );
             }
 
             out.println("<br><br>");
 
             out.println(
-                    "<a href=\"product.html\">"
+                    "<a href='product.html'>"
                     + "Submit Another Product"
                     + "</a>"
             );
@@ -228,7 +238,7 @@ public class ProductSubmitServlet extends HttpServlet {
             out.println("<br><br>");
 
             out.println(
-                    "<a href=\"index.html\">"
+                    "<a href='index.html'>"
                     + "Go to Home Page"
                     + "</a>"
             );
@@ -242,6 +252,15 @@ public class ProductSubmitServlet extends HttpServlet {
                     response.getWriter();
 
             out.println("<html>");
+            out.println("<head>");
+            out.println(
+                    "<meta charset='UTF-8'>"
+            );
+            out.println(
+                    "<title>Registration Error</title>"
+            );
+            out.println("</head>");
+
             out.println("<body>");
 
             out.println(

@@ -129,13 +129,12 @@ public class ApproveProductServlet extends HttpServlet {
 
                 if (rows > 0) {
 
-                    showMessage(
-                            response,
-                            "Product Approved Successfully",
-                            "Product ID: "
+                    response.sendRedirect(
+                            "schedule-auction.html?product_id="
                             + productId
-                            + "<br>Status: APPROVED"
                     );
+
+                    return;
 
                 } else {
 
@@ -177,20 +176,28 @@ public class ApproveProductServlet extends HttpServlet {
         out.println("<html>");
         out.println("<head>");
         out.println("<meta charset='UTF-8'>");
-        out.println("<title>"
+
+        out.println(
+                "<title>"
                 + title
-                + "</title>");
+                + "</title>"
+        );
+
         out.println("</head>");
 
         out.println("<body>");
 
-        out.println("<h1>"
+        out.println(
+                "<h1>"
                 + title
-                + "</h1>");
+                + "</h1>"
+        );
 
-        out.println("<p>"
+        out.println(
+                "<p>"
                 + message
-                + "</p>");
+                + "</p>"
+        );
 
         out.println("<br>");
 
@@ -235,4 +242,4 @@ public class ApproveProductServlet extends HttpServlet {
                 response
         );
     }
-}
+}   

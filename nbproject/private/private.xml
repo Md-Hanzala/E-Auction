@@ -3,16 +3,21 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/D:/E-Auction/EAuction/src/java/eauction/AdminProductServlet.java</file>
+            <file>file:/D:/E-Auction/EAuction/web/schedule-auction.html</file>
+            <file>file:/D:/E-Auction/EAuction/src/java/eauction/RegisterServlet.java</file>
+            <file>file:/D:/E-Auction/EAuction/src/java/eauction/AuctionScheduler.java</file>
+            <file>file:/D:/E-Auction/EAuction/src/java/eauction/CertificateServlet.java</file>
+            <file>file:/D:/E-Auction/EAuction/src/java/eauction/AuctionWebSocket.java</file>
             <file>file:/D:/E-Auction/EAuction/src/java/eauction/AuctionDetailsServlet.java</file>
             <file>file:/D:/E-Auction/EAuction/web/index.html</file>
-            <file>file:/D:/E-Auction/EAuction/src/java/eauction/AdminProductServlet.java</file>
-            <file>file:/D:/E-Auction/EAuction/src/java/eauction/RejectProductServlet.java</file>
-            <file>file:/D:/E-Auction/EAuction/web/image/02-mercedes-benz-classic-300-slr-article-2022-2560x1440.jpeg</file>
+            <file>file:/D:/E-Auction/EAuction/src/java/eauction/PlaceBidServlet.java</file>
+            <file>file:/D:/E-Auction/EAuction/src/java/eauction/AuctionSchedulerListener.java</file>
             <file>file:/D:/E-Auction/EAuction/src/java/eauction/ApproveProductServlet.java</file>
-            <file>file:/D:/E-Auction/EAuction/src/java/eauction/ScheduleAuctionServlet.java</file>
-            <file>file:/D:/E-Auction/EAuction/web/admin-products.html</file>
+            <file>file:/D:/E-Auction/EAuction/src/java/eauction/AuctionListServlet.java</file>
             <file>file:/D:/E-Auction/EAuction/src/java/eauction/ProductSubmitServlet.java</file>
             <file>file:/D:/E-Auction/EAuction/web/auction.html</file>
+            <file>file:/D:/E-Auction/EAuction/src/java/eauction/SettlementServlet.java</file>
         </group>
     </open-files>
 </project-private>

@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class SettlementServlet extends HttpServlet {
@@ -17,6 +18,16 @@ public class SettlementServlet extends HttpServlet {
             throws ServletException, IOException {
 
         response.setContentType("text/html;charset=UTF-8");
+
+        HttpSession session =
+                request.getSession(false);
+
+        if (session == null ||
+                session.getAttribute("user_id") == null) {
+
+            response.sendRedirect("login.html");
+            return;
+        }
 
         String auctionId = request.getParameter("auction_id");
 
@@ -99,7 +110,8 @@ public class SettlementServlet extends HttpServlet {
             String existingQuery =
                     "SELECT settlement_id "
                     + "FROM settlements "
-                    + "WHERE auction_id = ?";
+                    + "WHERE auction_id = ? "
+                    + "FOR UPDATE";
 
             PreparedStatement existingPs =
                     con.prepareStatement(existingQuery);

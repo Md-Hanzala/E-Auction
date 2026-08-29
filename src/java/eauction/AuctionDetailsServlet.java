@@ -110,12 +110,12 @@ public class AuctionDetailsServlet extends HttpServlet {
                         String startTime =
                                 rs.getTimestamp(
                                         "start_time"
-                                ).toString();
+                                ).toInstant().toString();
 
                         String endTime =
                                 rs.getTimestamp(
                                         "end_time"
-                                ).toString();
+                                ).toInstant().toString();
 
                         String status =
                                 rs.getString("status");

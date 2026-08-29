@@ -72,6 +72,7 @@
 
             <p>
                 <button type="button"
+                        id="placeBidButton"
                         onclick="placeBid()">
                     PLACE BID
                 </button>
@@ -135,10 +136,20 @@
     <script>
 
         let currentPrice = 0;
+
         let auctionId = null;
+
         let socket = null;
+
         let auctionEndTime = null;
+
         let auctionStatus = null;
+
+        let countdownInterval = null;
+
+        let pendingBidKey = null;
+
+        let pendingBidAmount = null;
 
 
         function getAuctionIdFromUrl() {
@@ -149,6 +160,59 @@
                 );
 
             return params.get("auction_id");
+
+        }
+
+
+        function getImageUrl(imageReference) {
+
+            if (!imageReference) {
+
+                return "";
+
+            }
+
+
+            if (
+                imageReference.startsWith("http://") ||
+                imageReference.startsWith("https://")
+            ) {
+
+                return imageReference;
+
+            }
+
+
+            if (
+                imageReference.startsWith("image/")
+            ) {
+
+                imageReference =
+                    "/uploads/" +
+                    imageReference.substring(
+                        "image/".length
+                    );
+
+            }
+
+
+            if (
+                imageReference.startsWith("/")
+            ) {
+
+                const contextPath =
+                    window.location.pathname.substring(
+                        0,
+                        window.location.pathname.lastIndexOf("/")
+                    );
+
+                return contextPath + imageReference;
+
+            }
+
+
+            return imageReference;
+
         }
 
 
@@ -166,6 +230,7 @@
                     "Auction not specified.";
 
                 return;
+
             }
 
 
@@ -190,6 +255,7 @@
                         data.error;
 
                     return;
+
                 }
 
 
@@ -198,8 +264,10 @@
                         data.current_price
                     );
 
+
                 auctionEndTime =
                     data.end_time;
+
 
                 auctionStatus =
                     data.status;
@@ -264,7 +332,9 @@
                     document.getElementById(
                         "productImage"
                     ).src =
-                        data.image_reference;
+                        getImageUrl(
+                            data.image_reference
+                        );
 
                 }
 
@@ -420,11 +490,12 @@
 
             if (currentPrice <= 0) {
 
-                alert(
+                showMessage(
                     "Current price is not available."
                 );
 
                 return;
+
             }
 
 
@@ -457,7 +528,7 @@
                 auctionStatus !== "LIVE"
             ) {
 
-                alert(
+                showMessage(
                     "This auction is not live."
                 );
 
@@ -474,22 +545,48 @@
 
             if (!auctionId) {
 
-                alert(
+                showMessage(
                     "Auction not specified."
                 );
 
                 return;
+
             }
 
 
             if (!amount) {
 
-                alert(
+                showMessage(
                     "Enter a bid amount."
                 );
 
                 return;
+
             }
+
+
+            const placeBidButton =
+                document.getElementById(
+                    "placeBidButton"
+                );
+
+
+            placeBidButton.disabled =
+                true;
+
+
+            if (pendingBidKey !== null &&
+                    pendingBidAmount === amount) {
+                // Retry of the same failed attempt:
+                // reuse the existing idempotency key.
+            } else {
+                pendingBidKey =
+                        crypto.randomUUID();
+                pendingBidAmount = amount;
+            }
+
+
+            const idempotencyKey = pendingBidKey;
 
 
             const formData =
@@ -505,6 +602,12 @@
             formData.append(
                 "amount",
                 amount
+            );
+
+
+            formData.append(
+                "idempotency_key",
+                idempotencyKey
             );
 
 
@@ -529,10 +632,18 @@
 
             .then(data => {
 
-                document.getElementById(
-                    "latestUpdate"
-                ).innerText =
-                    "Bid request submitted.";
+                if (data.indexOf("Bid Accepted") !== -1) {
+
+                    pendingBidKey = null;
+                    pendingBidAmount = null;
+                }
+
+                showMessage(
+                    extractServerMessage(
+                        data
+                    )
+                );
+
 
                 loadAuctionDetails();
 
@@ -540,17 +651,76 @@
 
             .catch(error => {
 
-                document.getElementById(
-                    "latestUpdate"
-                ).innerText =
-                    "Bid request failed.";
+                showMessage(
+                    "Bid request failed."
+                );
 
                 console.error(
                     "Bid error:",
                     error
                 );
 
+            })
+
+            .finally(() => {
+
+                placeBidButton.disabled =
+                    false;
+
             });
+
+        }
+
+
+        function extractServerMessage(html) {
+
+            const parser =
+                new DOMParser();
+
+            const documentObject =
+                parser.parseFromString(
+                    html,
+                    "text/html"
+                );
+
+
+            const heading =
+                documentObject.querySelector(
+                    "h1"
+                );
+
+
+            const paragraph =
+                documentObject.querySelector(
+                    "p"
+                );
+
+
+            if (
+                heading &&
+                paragraph
+            ) {
+
+                return (
+                    heading.innerText
+                    + ": "
+                    + paragraph.innerText
+                );
+
+            }
+
+
+            return "Bid request completed.";
+
+        }
+
+
+        function showMessage(message) {
+
+            document.getElementById(
+                "latestUpdate"
+            ).innerText =
+                message;
 
         }
 
@@ -588,6 +758,7 @@
                         "Auction ended";
 
                     return;
+
                 }
 
 
@@ -603,10 +774,16 @@
             update();
 
 
-            setInterval(
-                update,
-                1000
-            );
+            if (countdownInterval !== null) {
+
+                clearInterval(countdownInterval);
+            }
+
+            countdownInterval =
+                setInterval(
+                    update,
+                    1000
+                );
 
         }
 
@@ -721,6 +898,7 @@
                         ) {
 
                             return;
+
                         }
 
 
@@ -778,6 +956,15 @@
 
                             }
 
+                        } else if (
+                            data.type ===
+                            "LIFECYCLE"
+                        ) {
+
+                            loadAuctionDetails();
+
+                            return;
+
                         }
 
                     } catch (error) {
@@ -833,6 +1020,7 @@
             ) {
 
                 return dateString;
+
             }
 
 

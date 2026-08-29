@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class CertificateServlet extends HttpServlet {
@@ -17,6 +18,16 @@ public class CertificateServlet extends HttpServlet {
             throws ServletException, IOException {
 
         response.setContentType("text/html;charset=UTF-8");
+
+        HttpSession session =
+                request.getSession(false);
+
+        if (session == null ||
+                session.getAttribute("user_id") == null) {
+
+            response.sendRedirect("login.html");
+            return;
+        }
 
         String transactionId = request.getParameter("transaction_id");
 
@@ -92,7 +103,8 @@ public class CertificateServlet extends HttpServlet {
             String existingQuery =
                     "SELECT certificate_id, certificate_number "
                     + "FROM certificates "
-                    + "WHERE transaction_id = ?";
+                    + "WHERE transaction_id = ? "
+                    + "FOR UPDATE";
 
             PreparedStatement existingPs =
                     con.prepareStatement(existingQuery);
@@ -156,6 +168,37 @@ public class CertificateServlet extends HttpServlet {
             insertPs.executeUpdate();
 
             insertPs.close();
+
+            String updateAuctionQuery =
+                    "UPDATE auctions "
+                    + "SET status = 'SETTLED' "
+                    + "WHERE auction_id = ? "
+                    + "AND status = 'SOLD'";
+
+            PreparedStatement updateAuctionPs =
+                    con.prepareStatement(updateAuctionQuery);
+
+            updateAuctionPs.setInt(1, auctionId);
+
+            int updatedRows =
+                    updateAuctionPs.executeUpdate();
+
+            updateAuctionPs.close();
+
+            if (updatedRows == 0) {
+
+                con.rollback();
+
+                showMessage(
+                        response,
+                        "Certificate Failed",
+                        "Auction could not be settled."
+                );
+
+                con.close();
+
+                return;
+            }
 
             con.commit();
 

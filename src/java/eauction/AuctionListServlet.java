@@ -186,7 +186,7 @@ public class AuctionListServlet extends HttpServlet {
                 json.append(
                         rs.getTimestamp(
                                 "start_time"
-                        )
+                        ).toInstant().toString()
                 );
 
                 json.append("\",");
@@ -198,7 +198,7 @@ public class AuctionListServlet extends HttpServlet {
                 json.append(
                         rs.getTimestamp(
                                 "end_time"
-                        )
+                        ).toInstant().toString()
                 );
 
                 json.append("\",");

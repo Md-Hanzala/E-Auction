@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class TransactionServlet extends HttpServlet {
@@ -17,6 +18,16 @@ public class TransactionServlet extends HttpServlet {
             throws ServletException, IOException {
 
         response.setContentType("text/html;charset=UTF-8");
+
+        HttpSession session =
+                request.getSession(false);
+
+        if (session == null ||
+                session.getAttribute("user_id") == null) {
+
+            response.sendRedirect("login.html");
+            return;
+        }
 
         String auctionId = request.getParameter("auction_id");
 
@@ -104,10 +115,50 @@ public class TransactionServlet extends HttpServlet {
                 return;
             }
 
+            String settlementQuery =
+                    "SELECT settlement_id "
+                    + "FROM settlements "
+                    + "WHERE auction_id = ? "
+                    + "AND settlement_status = 'PAID' "
+                    + "FOR UPDATE";
+
+            PreparedStatement settlementPs =
+                    con.prepareStatement(settlementQuery);
+
+            settlementPs.setInt(
+                    1,
+                    Integer.parseInt(auctionId)
+            );
+
+            ResultSet settlementRs =
+                    settlementPs.executeQuery();
+
+            if (!settlementRs.next()) {
+
+                settlementRs.close();
+                settlementPs.close();
+
+                con.rollback();
+
+                showMessage(
+                        response,
+                        "Transaction Failed",
+                        "No PAID settlement exists for this auction."
+                );
+
+                con.close();
+
+                return;
+            }
+
+            settlementRs.close();
+            settlementPs.close();
+
             String existingQuery =
                     "SELECT transaction_id "
                     + "FROM transactions "
-                    + "WHERE auction_id = ?";
+                    + "WHERE auction_id = ? "
+                    + "FOR UPDATE";
 
             PreparedStatement existingPs =
                     con.prepareStatement(existingQuery);

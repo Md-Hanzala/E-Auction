@@ -349,12 +349,16 @@
 
     let auctions = [];
 
+    let dashboardSocket = null;
+
 
     function loadUserSession() {
 
         fetch("user-session")
 
-            .then(response => response.json())
+            .then(response =>
+                response.json()
+            )
 
             .then(data => {
 
@@ -418,7 +422,9 @@
 
         fetch("auction-list")
 
-            .then(response => response.json())
+            .then(response =>
+                response.json()
+            )
 
             .then(data => {
 
@@ -430,7 +436,9 @@
                     );
 
                     return;
+
                 }
+
 
                 auctions = data;
 
@@ -450,35 +458,72 @@
     }
 
 
-    function getImageUrl(imageReference) {
+    function getImageUrl(
+        imageReference
+    ) {
 
         if (!imageReference) {
+
             return "";
+
         }
+
 
         if (
             imageReference.startsWith("http://") ||
             imageReference.startsWith("https://")
         ) {
+
             return imageReference;
+
         }
 
-        if (imageReference.startsWith("/")) {
-            return imageReference;
+
+        if (
+            imageReference.startsWith("image/")
+        ) {
+
+            imageReference =
+                "/uploads/" +
+                imageReference.substring(
+                    "image/".length
+                );
+
         }
+
+
+        if (
+            imageReference.startsWith("/")
+        ) {
+
+            const contextPath =
+                window.location.pathname.substring(
+                    0,
+                    window.location.pathname.lastIndexOf("/")
+                );
+
+            return contextPath + imageReference;
+
+        }
+
 
         return imageReference;
 
     }
 
 
-    function createAuctionCard(auction) {
+    function createAuctionCard(
+        auction
+    ) {
 
         const card =
             document.createElement("div");
 
         card.className =
             "auction-card";
+
+        card.dataset.auctionId =
+            auction.auctionId;
 
 
         const image =
@@ -507,12 +552,13 @@
         }
 
 
-        image.onerror = function () {
+        image.onerror =
+            function() {
 
-            this.style.display =
-                "none";
+                this.style.display =
+                    "none";
 
-        };
+            };
 
 
         const content =
@@ -539,7 +585,9 @@
             "Starting Price: ₹"
             + Number(
                 auction.startPrice
-            ).toLocaleString("en-IN");
+            ).toLocaleString(
+                "en-IN"
+            );
 
 
         const currentPrice =
@@ -548,14 +596,22 @@
         currentPrice.className =
             "price";
 
+        currentPrice.dataset.field =
+            "currentPrice";
 
-        if (auction.status === "SOLD") {
+
+        if (
+            auction.status ===
+            "SOLD"
+        ) {
 
             currentPrice.textContent =
                 "Final Price: ₹"
                 + Number(
                     auction.currentPrice
-                ).toLocaleString("en-IN");
+                ).toLocaleString(
+                    "en-IN"
+                );
 
         } else {
 
@@ -563,7 +619,9 @@
                 "Current Price: ₹"
                 + Number(
                     auction.currentPrice
-                ).toLocaleString("en-IN");
+                ).toLocaleString(
+                    "en-IN"
+                );
 
         }
 
@@ -601,7 +659,10 @@
             "timer";
 
 
-        if (auction.status === "LIVE") {
+        if (
+            auction.status ===
+            "LIVE"
+        ) {
 
             content.appendChild(timer);
 
@@ -613,7 +674,10 @@
         }
 
 
-        if (auction.status === "SCHEDULED") {
+        if (
+            auction.status ===
+            "SCHEDULED"
+        ) {
 
             content.appendChild(timer);
 
@@ -629,6 +693,9 @@
             document.createElement("div");
 
         status.className =
+            "status";
+
+        status.dataset.field =
             "status";
 
         status.textContent =
@@ -654,17 +721,29 @@
 
         content.appendChild(title);
 
-        content.appendChild(startingPrice);
+        content.appendChild(
+            startingPrice
+        );
 
-        content.appendChild(currentPrice);
+        content.appendChild(
+            currentPrice
+        );
 
-        content.appendChild(startTime);
+        content.appendChild(
+            startTime
+        );
 
-        content.appendChild(endTime);
+        content.appendChild(
+            endTime
+        );
 
-        content.appendChild(status);
+        content.appendChild(
+            status
+        );
 
-        content.appendChild(button);
+        content.appendChild(
+            button
+        );
 
 
         card.appendChild(image);
@@ -787,7 +866,173 @@
     }
 
 
-    function formatDate(dateString) {
+    function updateDashboardAuction(
+        data
+    ) {
+
+        const cards =
+            document.querySelectorAll(
+                ".auction-card"
+            );
+
+
+        cards.forEach(
+            function(card) {
+
+                if (
+                    parseInt(
+                        card.dataset.auctionId
+                    ) !==
+                    parseInt(
+                        data.auction_id
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                const currentPrice =
+                    card.querySelector(
+                        "[data-field='currentPrice']"
+                    );
+
+
+                if (currentPrice) {
+
+                    currentPrice.textContent =
+                        "Current Price: ₹"
+                        + Number(
+                            data.current_price
+                        ).toLocaleString(
+                            "en-IN"
+                        );
+
+                }
+
+
+                const status =
+                    card.querySelector(
+                        "[data-field='status']"
+                    );
+
+
+                if (
+                    status &&
+                    data.status
+                ) {
+
+                    status.textContent =
+                        "Status: "
+                        + data.status;
+
+                }
+
+            }
+        );
+
+    }
+
+
+    function connectDashboardWebSocket() {
+
+        const protocol =
+            window.location.protocol ===
+            "https:"
+            ? "wss:"
+            : "ws:";
+
+
+        const socketUrl =
+            protocol
+            + "//"
+            + window.location.host
+            + window.location.pathname
+                .substring(
+                    0,
+                    window.location.pathname
+                        .lastIndexOf("/")
+                )
+            + "/auctionSocket";
+
+
+        dashboardSocket =
+            new WebSocket(
+                socketUrl
+            );
+
+
+        dashboardSocket.onopen =
+            function() {
+
+                console.log(
+                    "Dashboard WebSocket connected."
+                );
+
+            };
+
+
+        dashboardSocket.onmessage =
+            function(event) {
+
+                try {
+
+                    const data =
+                        JSON.parse(
+                            event.data
+                        );
+
+
+                    if (
+                        data.type ===
+                        "BID_UPDATE"
+                    ) {
+
+                        updateDashboardAuction(
+                            data
+                        );
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "Dashboard WebSocket message error:",
+                        error
+                    );
+
+                }
+
+            };
+
+
+        dashboardSocket.onclose =
+            function() {
+
+                console.log(
+                    "Dashboard WebSocket disconnected."
+                );
+
+            };
+
+
+        dashboardSocket.onerror =
+            function(error) {
+
+                console.error(
+                    "Dashboard WebSocket error:",
+                    error
+                );
+
+            };
+
+    }
+
+
+    function formatDate(
+        dateString
+    ) {
 
         const date =
             new Date(
@@ -798,7 +1043,11 @@
             );
 
 
-        if (isNaN(date.getTime())) {
+        if (
+            isNaN(
+                date.getTime()
+            )
+        ) {
 
             return dateString;
 
@@ -861,6 +1110,7 @@
 
         update();
 
+
         setInterval(
             update,
             1000
@@ -913,6 +1163,7 @@
 
 
         update();
+
 
         setInterval(
             update,
@@ -973,9 +1224,28 @@
     }
 
 
+    /*
+     * Refresh auction data every 10 seconds.
+     *
+     * This allows the dashboard to notice:
+     *
+     * SCHEDULED → LIVE
+     * LIVE → SOLD
+     *
+     * without refreshing the browser page.
+     */
+
+    setInterval(
+        loadAuctions,
+        10000
+    );
+
+
     loadUserSession();
 
     loadAuctions();
+
+    connectDashboardWebSocket();
 
 </script>
 

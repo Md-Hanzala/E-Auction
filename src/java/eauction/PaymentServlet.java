@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class PaymentServlet extends HttpServlet {
@@ -17,6 +18,16 @@ public class PaymentServlet extends HttpServlet {
             throws ServletException, IOException {
 
         response.setContentType("text/html;charset=UTF-8");
+
+        HttpSession session =
+                request.getSession(false);
+
+        if (session == null ||
+                session.getAttribute("user_id") == null) {
+
+            response.sendRedirect("login.html");
+            return;
+        }
 
         String settlementId = request.getParameter("settlement_id");
 
