@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard (Prototype) | HASHbid</title>
+    <link rel="icon" type="image/svg+xml" href="assets/images/hashbid-logo.svg">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="auth-page">
+
+    <!-- Top Navigation -->
+    <header>
+        <nav class="navbar bs-navbar">
+            <a href="index.html" class="logo bs-logo">
+                <img src="assets/images/hashbid-logo.svg" alt="HASHbid Emblem" width="24" height="24" style="border-radius: 6px;">
+                HASH<span>bid</span>
+            </a>
+            <div class="nav-links bs-nav-links">
+                <a href="admin-dashboard" class="bs-button bs-button--primary bs-button--sm">Go to Live Admin Console</a>
+                <a href="admin-bid-history" class="bs-button bs-button--secondary bs-button--sm">Bid History</a>
+                <a href="logout" class="bs-button bs-button--danger bs-button--sm">Sign Out</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="form-page-container bs-page-container" style="max-width: 1160px; width: 94%;">
+        <!-- Informational Notice Banner -->
+        <div class="bs-alert bs-alert--warning" style="margin-bottom: 24px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>Notice: This is a static prototype template. The active production console with live seller verification and product approval queues is located at <a href="admin-dashboard" style="color: var(--bs-color-primary-light); font-weight: 700; text-decoration: underline;">/admin-dashboard</a>.</span>
+        </div>
+
+        <section class="form-intro bs-page-header" style="text-align: left; margin-bottom: 28px;">
+            <span class="bs-eyebrow auth-tag">PROTOTYPE VIEW</span>
+            <h1>Admin Control Center (Mockup)</h1>
+            <p>Verify sellers, review product listings, monitor active bidding floors, and inspect platform telemetry.</p>
+        </section>
+
+        <!-- Summary Telemetry Grid -->
+        <section class="feature-grid bs-card-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 36px;">
+            <div class="feature-card bs-card">
+                <div class="feature-icon" style="color: var(--bs-color-primary-light);">👤</div>
+                <h3>Pending Sellers</h3>
+                <p style="font-size: 28px; font-weight: 800; color: var(--bs-color-primary-light); margin: 8px 0 0 0; font-family: ui-monospace, monospace;">1</p>
+            </div>
+            <div class="feature-card bs-card">
+                <div class="feature-icon" style="color: var(--bs-color-primary);">📦</div>
+                <h3>Pending Lots</h3>
+                <p style="font-size: 28px; font-weight: 800; color: var(--bs-color-primary-light); margin: 8px 0 0 0; font-family: ui-monospace, monospace;">2</p>
+            </div>
+            <div class="feature-card bs-card">
+                <div class="feature-icon" style="color: var(--bs-color-success-light);">⚡</div>
+                <h3>Live Floor Lots</h3>
+                <p style="font-size: 28px; font-weight: 800; color: var(--bs-color-primary-light); margin: 8px 0 0 0; font-family: ui-monospace, monospace;">3</p>
+            </div>
+            <div class="feature-card bs-card">
+                <div class="feature-icon" style="color: var(--bs-color-primary);">💼</div>
+                <h3>Audit Stream</h3>
+                <p style="font-size: 28px; font-weight: 800; color: var(--bs-color-primary-light); margin: 8px 0 0 0; font-family: ui-monospace, monospace;">Synchronized</p>
+            </div>
+        </section>
+
+        <!-- Seller Verification Section -->
+        <section class="registration-form-card bs-card" style="margin-bottom: 36px; padding: 28px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                <h2 style="color: var(--bs-color-text); font-size: 1.25rem; font-weight: 700; margin: 0;">Seller Verification Queue</h2>
+                <span class="status-badge bs-badge bs-badge--warning">Action Required</span>
+            </div>
+
+            <div class="bs-table-container">
+                <table class="data-table bs-table">
+                    <thead>
+                        <tr>
+                            <th>Seller Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Location</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 700; color: var(--bs-color-text);">Tariq Mansoor</td>
+                            <td>tariq.seller@example.com</td>
+                            <td>+91 98765 43210</td>
+                            <td>Mumbai, MH</td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button type="button" class="bs-button bs-button--primary bs-button--sm">Approve</button>
+                                    <button type="button" class="bs-button bs-button--danger bs-button--sm">Reject</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Product Approval Section -->
+        <section class="registration-form-card bs-card" style="margin-bottom: 36px; padding: 28px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                <h2 style="color: var(--bs-color-text); font-size: 1.25rem; font-weight: 700; margin: 0;">Product Review &amp; Pricing Queue</h2>
+                <span class="status-badge bs-badge bs-badge--warning">2 Awaiting Review</span>
+            </div>
+
+            <div class="bs-table-container">
+                <table class="data-table bs-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Seller</th>
+                            <th>Base Price</th>
+                            <th>Review Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 700; color: var(--bs-color-text);">Sony Alpha A7 IV Camera</td>
+                            <td><span class="bs-badge bs-badge--neutral">Electronics</span></td>
+                            <td>Vikram Singh</td>
+                            <td style="color: var(--bs-color-primary-light); font-weight: 700; font-family: ui-monospace, monospace;">₹1,10,000</td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button type="button" class="bs-button bs-button--primary bs-button--sm">Approve</button>
+                                    <button type="button" class="bs-button bs-button--danger bs-button--sm">Reject</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 700; color: var(--bs-color-text);">Rolex Submariner Date (1998)</td>
+                            <td><span class="bs-badge bs-badge--neutral">Jewelry &amp; Watches</span></td>
+                            <td>Deepak Rawat</td>
+                            <td style="color: var(--bs-color-primary-light); font-weight: 700; font-family: ui-monospace, monospace;">₹4,50,000</td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <button type="button" class="bs-button bs-button--primary bs-button--sm">Approve</button>
+                                    <button type="button" class="bs-button bs-button--danger bs-button--sm">Reject</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Auction Scheduler Section -->
+        <section class="registration-form-card bs-card" style="padding: 28px;">
+            <h2 style="color: var(--bs-color-text); font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">Schedule Approved Auction (Mockup)</h2>
+            <p style="color: var(--bs-color-muted); font-size: 14px; margin-bottom: 24px;">
+                Only administrator-approved lots appear here. Pick a quick slot or configure an advanced scheduling window.
+            </p>
+
+            <form action="#" method="post">
+                <div class="form-grid bs-form-grid">
+                    <div class="form-group full-width bs-field--full">
+                        <label for="approvedItem" class="bs-label">Select Approved Product</label>
+                        <select id="approvedItem" name="approvedItem" class="bs-select" required>
+                            <option value="">Choose an approved lot...</option>
+                            <option value="101">Sony Alpha A7 IV Camera (Base: ₹1,10,000)</option>
+                            <option value="102">Rolex Submariner Date (Base: ₹4,50,000)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group bs-field">
+                        <label for="slotType" class="bs-label">Slot Selection Type</label>
+                        <select id="slotType" name="slotType" class="bs-select" required>
+                            <option value="quick">Predefined Quick Slot (30 Mins)</option>
+                            <option value="advanced">Advanced Custom Duration</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group bs-field">
+                        <label for="timeWindow" class="bs-label">Quick Slot Preset</label>
+                        <select id="timeWindow" name="timeWindow" class="bs-select">
+                            <option value="slot1">Today: 16:00 – 16:30 IST</option>
+                            <option value="slot2">Today: 16:30 – 17:00 IST</option>
+                            <option value="slot3">Today: 17:00 – 17:30 IST</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group bs-field">
+                        <label for="concurrencyMode" class="bs-label">Execution Mode</label>
+                        <select id="concurrencyMode" name="concurrencyMode" class="bs-select">
+                            <option value="queue">Queue Mode (Sequential)</option>
+                            <option value="parallel">Parallel Mode (Simultaneous)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group bs-field">
+                        <label for="minIncrement" class="bs-label">Minimum Increment (₹)</label>
+                        <input type="number" id="minIncrement" name="minIncrement" class="bs-input" value="500" min="100" step="100" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="bs-button bs-button--primary" style="margin-top: 24px;">
+                    Publish Scheduled Auction
+                </button>
+            </form>
+        </section>
+    </main>
+
+</body>
+</html>

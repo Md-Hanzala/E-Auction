@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merchant Registration | HASHbid Marketplace</title>
+    <link rel="icon" type="image/svg+xml" href="assets/images/hashbid-logo.svg">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="auth-page">
+
+    <!-- Top Navigation -->
+    <header>
+        <nav class="navbar bs-navbar">
+            <a href="index.html" class="logo bs-logo">
+                <img src="assets/images/hashbid-logo.svg" alt="HASHbid Emblem" width="24" height="24" style="border-radius: 6px;">
+                HASH<span>bid</span>
+            </a>
+
+            <a href="auth.html" class="back-home bs-back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m15 18-6-6 6-6"/>
+                </svg>
+                Choose Role
+            </a>
+        </nav>
+    </header>
+
+    <main class="form-page-container bs-page-container" style="max-width: 720px;">
+        <section class="form-intro bs-page-header" style="text-align: center; margin-bottom: 24px;">
+            <span class="bs-eyebrow auth-tag" style="background: var(--bs-color-primary-soft); color: var(--bs-color-primary-light); border-color: rgba(181, 141, 90, 0.35);">
+                MERCHANT APPLICATION
+            </span>
+            <h1>Apply for Seller Status</h1>
+            <p style="margin: 0 auto;">List products, track bids, and fulfill sales. All merchant applications undergo administrative review prior to floor launch.</p>
+        </section>
+
+        <!-- Dynamic URL Feedback Banner -->
+        <div id="registerAlert" style="display: none; margin-bottom: 20px;"></div>
+
+        <section class="registration-form-card bs-card">
+            <form action="seller-register" method="post" id="sellerRegisterForm">
+                <div class="form-grid bs-form-grid">
+                    <div class="form-group bs-field">
+                        <label for="fullName" class="bs-field__label">Merchant / Business Name</label>
+                        <input type="text" id="fullName" name="fullName" class="bs-field__control" placeholder="e.g. Apex Luxury Goods" required autocomplete="name">
+                    </div>
+
+                    <div class="form-group bs-field">
+                        <label for="email" class="bs-field__label">Contact Email Address</label>
+                        <input type="email" id="email" name="email" class="bs-field__control" placeholder="merchant@domain.com" required autocomplete="email">
+                    </div>
+
+                    <div class="form-group bs-field">
+                        <label for="phone" class="bs-field__label">Business Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="bs-field__control" placeholder="+91 98765 43210" required autocomplete="tel">
+                    </div>
+
+                    <div class="form-group bs-field">
+                        <label for="password" class="bs-field__label">Account Password</label>
+                        <input type="password" id="password" name="password" class="bs-field__control" placeholder="Create a secure password" required autocomplete="new-password">
+                    </div>
+
+                    <div class="form-group full-width bs-field bs-col-span-2">
+                        <label for="address" class="bs-field__label">Business / Warehouse Dispatch Address</label>
+                        <textarea id="address" name="address" class="bs-field__control" rows="3" placeholder="Enter physical headquarters or fulfillment dispatch address" required></textarea>
+                        <p class="bs-field__help">Our vetting team verifies dispatch locations to ensure valid physical lot provenance.</p>
+                    </div>
+                </div>
+
+                <button type="submit" class="bs-button bs-button--primary form-submit-button" id="sellerSubmitBtn" style="margin-top: 24px;">
+                    <span class="bs-spinner" aria-hidden="true"></span>
+                    <span>Submit Seller Application</span>
+                </button>
+
+                <p class="form-note" style="text-align: center; margin-top: 20px;">
+                    Already an approved merchant? <a href="login.html">Sign in here</a>
+                </p>
+            </form>
+        </section>
+    </main>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        (function checkRegisterParams() {
+            const params = new URLSearchParams(window.location.search);
+            const alertBox = document.getElementById('registerAlert');
+            if (params.get('error') === 'email_exists' && alertBox) {
+                alertBox.className = 'bs-alert bs-alert--error';
+                alertBox.textContent = 'This email is already registered. Please sign in or use another email.';
+                alertBox.style.display = 'flex';
+            }
+        })();
+
+        document.getElementById('sellerRegisterForm')?.addEventListener('submit', function() {
+            const btn = document.getElementById('sellerSubmitBtn');
+            if (btn) {
+                btn.classList.add('is-loading');
+                btn.disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>

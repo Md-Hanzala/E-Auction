@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Portal | HASHbid</title>
+    <link rel="icon" type="image/svg+xml" href="assets/images/hashbid-logo.svg">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="auth-page">
+
+    <!-- Top Navigation -->
+    <header>
+        <nav class="navbar bs-navbar">
+            <a href="index.html" class="logo bs-logo">
+                <img src="assets/images/hashbid-logo.svg" alt="HASHbid Emblem" width="24" height="24" style="border-radius: 6px;">
+                HASH<span>bid</span>
+            </a>
+
+            <a href="index.html" class="back-home bs-back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m15 18-6-6 6-6"/>
+                </svg>
+                Back to Home
+            </a>
+        </nav>
+    </header>
+
+    <main class="auth-container bs-page-container">
+        <section class="auth-intro bs-page-header" style="text-align: center;">
+            <span class="bs-eyebrow auth-tag">ROLE GATEWAY</span>
+            <h1>Choose Your Auction Experience</h1>
+            <p style="margin: 0 auto;">
+                HASHbid provides dedicated workspaces tailored to buyers, merchants, and market operators.
+                Select your path to register or access your dashboard.
+            </p>
+        </section>
+
+        <!-- Role Gateway Grid -->
+        <section class="role-grid bs-card-grid" style="margin-bottom: 36px;">
+            <!-- Buyer Portal -->
+            <article class="role-card buyer-card bs-card">
+                <div>
+                    <div class="role-icon" style="color: var(--bs-color-success-light);">🔨</div>
+                    <h2>Buyer Floor</h2>
+                    <p>Participate in active auctions, place live bids with sub-second feedback, track your bid history, and receive verified settlement invoices.</p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="buyer-register.html" class="bs-button bs-button--primary role-button">
+                        Register as Buyer
+                    </a>
+                    <a href="login.html" class="bs-button bs-button--ghost bs-button--sm">
+                        Buyer Sign In →
+                    </a>
+                </div>
+            </article>
+
+            <!-- Seller Portal -->
+            <article class="role-card seller-card bs-card">
+                <div>
+                    <div class="role-icon" style="color: var(--bs-color-primary-light);">🏷️</div>
+                    <h2>Seller Console</h2>
+                    <p>Apply for a merchant account, list catalog items with photo uploads, monitor administrative reviews, and access winner fulfillment addresses.</p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="seller-register.html" class="bs-button bs-button--primary role-button">
+                        Apply as Seller
+                    </a>
+                    <a href="login.html" class="bs-button bs-button--ghost bs-button--sm">
+                        Seller Sign In →
+                    </a>
+                </div>
+            </article>
+
+            <!-- Admin Portal -->
+            <article class="role-card admin-card bs-card">
+                <div>
+                    <div class="role-icon" style="color: var(--bs-color-primary);">🛡️</div>
+                    <h2>Operations Center</h2>
+                    <p>Supervise live bidding traffic, approve merchant listings, schedule auction durations, execute emergency force-closures, and inspect audit logs.</p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="admin-login.html" class="bs-button bs-button--secondary role-button">
+                        Admin Portal Access
+                    </a>
+                    <span style="font-size: 11px; color: var(--bs-color-faint);">Requires authorized credential</span>
+                </div>
+            </article>
+        </section>
+
+        <!-- Direct Sign-in Reminder -->
+        <div style="text-align: center; padding: 20px; background: var(--bs-color-surface); border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-sm); max-width: 520px; margin: 0 auto;">
+            <p style="font-size: 14px; color: var(--bs-color-muted); margin: 0;">
+                Already have a registered account?
+                <a href="login.html" style="color: var(--bs-color-primary-light); font-weight: 700; margin-left: 4px;">Sign in directly to your workspace →</a>
+            </p>
+        </div>
+    </main>
+
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

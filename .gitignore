@@ -1,4 +1,69 @@
-﻿build/
+﻿# ==============================================================================
+# HASHbid Git Ignore Rules
+# ==============================================================================
+
+# Compiled Java & Build Artifacts
+target/
+build/
 dist/
 *.class
-cookies.txt
+*.war
+*.ear
+*.jar
+
+# Local Database Credentials & Machine Configuration
+db.properties
+**/db.properties
+.env
+.env.*
+*.local
+
+# Raw Diagnostic Database Dumps & Ad-hoc Exports
+# (Official sanitized setup scripts are tracked under database/local_setup/)
+*.dmp
+*.dump
+EAuction_Database.sql
+eauction.sql
+
+# IDE & Editor Specific Files
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# NetBeans Private User Configurations
+# (Keep shared nb-configuration.xml and nbproject/project.xml)
+nbproject/private/
+nbproject/Makefile-*.mk
+nbproject/Package-*.bash
+
+# Eclipse
+.project
+.classpath
+.settings/
+.metadata/
+bin/
+
+# Visual Studio Code
+.vscode/
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Log Files & Temporary Data
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+
+# Runtime User Uploads
+# Preserve directory structure and seed fixture (dear.jpg)
+src/main/webapp/uploads/*
+!src/main/webapp/uploads/dear.jpg
+!src/main/webapp/uploads/.gitkeep

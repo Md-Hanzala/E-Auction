@@ -1,0 +1,235 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HASHbid | Premier Online E-Auction Marketplace</title>
+    <link rel="icon" type="image/svg+xml" href="assets/images/hashbid-logo.svg">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <!-- HASHbid Cinematic Founder-to-Brand Transformation Intro Overlay -->
+    <div id="hbIntroOverlay" class="hb-intro-overlay" role="dialog" aria-modal="true" aria-label="HASHbid Brand Introduction" title="Click anywhere or press any key to skip intro">
+        <div class="hb-intro-bg-glow"></div>
+        <div class="hb-cinema-stage">
+            <!-- Scene 1: Sequential Founders Names Display -->
+            <div class="hb-names-viewport" aria-hidden="true">
+                <div class="hb-founder-slot hb-slot-1">
+                    <span class="hb-init-hi">H</span>ANZALA
+                    <span class="hb-light-sweep"></span>
+                </div>
+                <div class="hb-founder-slot hb-slot-2">
+                    <span class="hb-init-hi">A</span>WAIS
+                    <span class="hb-light-sweep"></span>
+                </div>
+                <div class="hb-founder-slot hb-slot-3">
+                    <span class="hb-init-hi">S</span>HOAIB
+                    <span class="hb-light-sweep"></span>
+                </div>
+                <div class="hb-founder-slot hb-slot-4">
+                    <span class="hb-init-hi">H</span>AZIQUE
+                    <span class="hb-light-sweep"></span>
+                </div>
+            </div>
+
+            <!-- Scene 2 & 3: Letters Converge into HASH and 'bid' joins from right -->
+            <div class="hb-brand-stage">
+                <div class="hb-hash-letters" aria-label="HASH">
+                    <span class="hb-char-init hb-h1">H</span>
+                    <span class="hb-char-init hb-a">A</span>
+                    <span class="hb-char-init hb-s">S</span>
+                    <span class="hb-char-init hb-h2">H</span>
+                </div>
+                <div class="hb-bid-cluster" aria-label="bid">
+                    <span>bid</span>
+                </div>
+            </div>
+
+            <!-- Brand Underline Sweep -->
+            <div class="hb-brand-underline" aria-hidden="true"></div>
+
+            <!-- Tagline Reveal -->
+            <div class="hb-cinema-tagline">
+                Four founders. <span>One marketplace.</span>
+            </div>
+
+            <!-- Skip Indicator Hint -->
+            <div class="hb-intro-skip-hint">Click or press any key to enter</div>
+        </div>
+    </div>
+
+    <!-- Top Navigation -->
+    <header>
+        <nav class="navbar bs-navbar">
+            <a href="index.html" class="logo bs-logo">
+                <img src="assets/images/hashbid-logo.svg" alt="HASHbid Emblem" width="24" height="24" style="border-radius: 6px;">
+                HASH<span>bid</span>
+            </a>
+
+            <ul class="nav-links bs-nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#founders">Founders</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#auctions">Live Floor</a></li>
+            </ul>
+
+            <a href="auth.html" class="bs-button bs-button--primary nav-button">
+                Sign In / Register
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h14"/>
+                    <path d="m12 5 7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </header>
+
+    <main id="home">
+        <!-- Hero Section -->
+        <section class="hero bs-hero">
+            <div class="hero-content bs-hero__content">
+                <div class="bs-eyebrow">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                    FOUR FOUNDERS • ONE MARKETPLACE • AUDITED
+                </div>
+
+                <h1>Bid smart. Win big. <span>Sell with integrity.</span></h1>
+
+                <p>
+                    HASHbid is an institutional-grade e-auction marketplace founded by Hanzala, Awais, Shoaib,
+                    and Hazique—uniting verified sellers and active buyers with sub-second, transparent bidding.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="auth.html" class="bs-button bs-button--primary primary-button">
+                        Start Bidding Now
+                    </a>
+                    <a href="#how-it-works" class="bs-button bs-button--secondary secondary-button">
+                        Platform Workflow
+                    </a>
+                </div>
+            </div>
+
+            <!-- Interactive Live Teaser Lot (Dynamic from Oracle HASHBID) -->
+            <div class="auction-card bs-card" id="auctions" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                    <span class="bs-status bs-status--live status-badge status-live">Live Lot</span>
+                    <span id="heroLotId" style="font-size: 11px; color: var(--bs-color-muted); font-weight: 700;"></span>
+                </div>
+
+                <div id="heroLotImageWrapper" style="margin-bottom: 14px; border-radius: var(--bs-radius-sm); overflow: hidden; max-height: 160px; background: var(--bs-color-ink-canvas); display: none;">
+                    <img id="heroLotImage" src="" alt="Live Lot" style="width: 100%; height: 160px; object-fit: cover; display: block;" onerror="this.parentElement.style.display='none';">
+                </div>
+
+                <h2 id="heroLotTitle" style="font-size: 20px; margin-bottom: 4px;"></h2>
+                <p id="heroLotSubtitle" style="font-size: 13px; color: var(--bs-color-muted); margin-bottom: 16px;"></p>
+
+                <div class="bid-row">
+                    <span>Starting Reserve</span>
+                    <strong id="heroStartingReserve" style="color: var(--bs-color-muted);"></strong>
+                </div>
+
+                <div class="bid-row">
+                    <span>Current Leading Bid</span>
+                    <strong id="heroCurrentBid" style="color: var(--bs-color-primary-light); font-size: 18px; font-family: ui-monospace, SFMono-Regular, monospace;"></strong>
+                </div>
+
+                <div class="timer" id="auctionTimer"></div>
+
+                <div style="margin-top: 18px;">
+                    <a href="auth.html" class="bs-button bs-button--primary" style="width: 100%;">
+                        Enter Auction Floor
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Founders Heritage Section -->
+        <section class="section" id="founders" style="padding-top: 0;">
+            <div class="section-title">
+                <span class="bs-eyebrow">THE ARCHITECTS OF HASHbid</span>
+                <h2>Four Founders. One Marketplace.</h2>
+                <p>Built with shared principles of market fairness, cryptographic integrity, and sub-second execution.</p>
+            </div>
+
+            <div class="feature-grid bs-card-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+                <article class="feature-card bs-card" style="text-align: center; padding: 24px;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--bs-color-surface-elevated); border: 1px solid var(--bs-color-border); color: var(--bs-color-primary-light); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; margin: 0 auto 16px; font-family: Georgia, serif;">H</div>
+                    <h3 style="margin-bottom: 4px;">Hanzala</h3>
+                    <p style="color: var(--bs-color-muted); font-size: 13px; margin-bottom: 0;">Co-Founder &amp; Systems Architecture</p>
+                </article>
+
+                <article class="feature-card bs-card" style="text-align: center; padding: 24px;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--bs-color-surface-elevated); border: 1px solid var(--bs-color-border); color: var(--bs-color-primary-light); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; margin: 0 auto 16px; font-family: Georgia, serif;">A</div>
+                    <h3 style="margin-bottom: 4px;">Awais</h3>
+                    <p style="color: var(--bs-color-muted); font-size: 13px; margin-bottom: 0;">Co-Founder &amp; Engineering Operations</p>
+                </article>
+
+                <article class="feature-card bs-card" style="text-align: center; padding: 24px;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--bs-color-surface-elevated); border: 1px solid var(--bs-color-border); color: var(--bs-color-primary-light); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; margin: 0 auto 16px; font-family: Georgia, serif;">S</div>
+                    <h3 style="margin-bottom: 4px;">Shoaib</h3>
+                    <p style="color: var(--bs-color-muted); font-size: 13px; margin-bottom: 0;">Co-Founder &amp; Security Engineering</p>
+                </article>
+
+                <article class="feature-card bs-card" style="text-align: center; padding: 24px;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--bs-color-surface-elevated); border: 1px solid var(--bs-color-border); color: var(--bs-color-primary-light); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; margin: 0 auto 16px; font-family: Georgia, serif;">H</div>
+                    <h3 style="margin-bottom: 4px;">Hazique</h3>
+                    <p style="color: var(--bs-color-muted); font-size: 13px; margin-bottom: 0;">Co-Founder &amp; Market Dynamics</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- Feature / Trust Section -->
+        <section class="section" id="how-it-works">
+            <div class="section-title">
+                <span class="bs-eyebrow">BUILT FOR FAIR MARKETS</span>
+                <h2>Everything You Need for High-Stakes Bidding</h2>
+                <p>Engineered for full accountability across buyers, sellers, and administrators.</p>
+            </div>
+
+            <div class="feature-grid bs-card-grid">
+                <article class="feature-card bs-card">
+                    <div class="feature-icon" style="color: var(--bs-color-primary-light);">🏷️</div>
+                    <h3>Curated Seller Listings</h3>
+                    <p>Every product undergoes administrative vetting before entering the live auction floor, ensuring authentic descriptions and verified starting prices.</p>
+                    <a href="seller-register.html" class="bs-button bs-button--secondary bs-button--sm">Apply as Seller</a>
+                </article>
+
+                <article class="feature-card bs-card">
+                    <div class="feature-icon" style="color: var(--bs-color-primary);">⚡</div>
+                    <h3>Atomic Real-Time Bidding</h3>
+                    <p>Sub-second concurrency controls ensure no overwrites or lost bids. Experience smooth visual countdowns and instantaneous feedback on winning bids.</p>
+                    <a href="buyer-register.html" class="bs-button bs-button--secondary bs-button--sm">Join as Buyer</a>
+                </article>
+
+                <article class="feature-card bs-card">
+                    <div class="feature-icon" style="color: var(--bs-color-success-light);">🛡️</div>
+                    <h3>Audited Settlement Receipts</h3>
+                    <p>When the hammer falls, winners immediately receive downloadable settlement receipts with encrypted vendor contacts for frictionless physical fulfillment.</p>
+                    <a href="auth.html" class="bs-button bs-button--secondary bs-button--sm">Explore System</a>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <!-- Public Footer -->
+    <footer class="footer">
+        <div style="max-width: var(--bs-content-max); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div class="logo bs-logo" style="font-size: 18px;">
+                <img src="assets/images/hashbid-logo.svg" alt="HASHbid Emblem" width="20" height="20" style="border-radius: 4px;">
+                HASH<span>bid</span>
+            </div>
+            <p>© 2026 HASHbid Marketplace. Four founders. One marketplace. All rights reserved.</p>
+            <div style="display: flex; gap: 16px;">
+                <a href="auth.html" style="color: var(--bs-color-muted); font-size: 12px;">Portals</a>
+                <a href="login.html" style="color: var(--bs-color-muted); font-size: 12px;">Sign In</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

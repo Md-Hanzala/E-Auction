@@ -1,0 +1,1370 @@
+﻿/* ==========================================================================
+   HASHbid Master Design System — assets/css/style.css
+   "Four founders. One marketplace."
+   Unified Brand Visual Identity: Public, Buyer, Seller, and Admin Experiences
+   Palette: Ink Black (#11151C), Graphite (#202834), Muted Bronze (#B58D5A),
+            Warm Ivory (#E8E5DE), Slate Grey (#8993A1), Muted Green (#567C68)
+   ========================================================================== */
+
+:root {
+    color-scheme: dark;
+
+    /* Primary Palette */
+    --bs-color-ink: #11151C;
+    --bs-color-ink-canvas: #0D1117;
+    --bs-color-surface: #202834;
+    --bs-color-surface-hover: #252F3C;
+    --bs-color-surface-elevated: #252F3C;
+    --bs-color-surface-glass: rgba(32, 40, 52, 0.88);
+
+    /* Brand & Accent: Muted Bronze */
+    --bs-color-primary: #B58D5A;
+    --bs-color-primary-hover: #9F784A;
+    --bs-color-primary-light: #D1B184;
+    --bs-color-primary-soft: rgba(181, 141, 90, 0.15);
+
+    /* Typography & Neutrals: Warm Ivory & Slate Grey */
+    --bs-color-text: #E8E5DE;
+    --bs-color-text-secondary: #CBD2D9;
+    --bs-color-muted: #8993A1;
+    --bs-color-faint: #636D79;
+    --bs-color-border: #35404D;
+    --bs-color-border-subtle: rgba(232, 229, 222, 0.08);
+
+    /* Semantic States */
+    --bs-color-success: #567C68;
+    --bs-color-success-hover: #456554;
+    --bs-color-success-light: #7CA891;
+    --bs-color-success-soft: rgba(86, 124, 104, 0.18);
+
+    --bs-color-warning: #C49A5A;
+    --bs-color-warning-soft: rgba(196, 154, 90, 0.16);
+
+    --bs-color-danger: #C87979;
+    --bs-color-danger-hover: #B46464;
+    --bs-color-danger-light: #E09898;
+    --bs-color-danger-soft: rgba(200, 121, 121, 0.16);
+
+    /* Geometry, Radii & Shadows */
+    --bs-radius-xs: 4px;
+    --bs-radius-sm: 8px;
+    --bs-radius-md: 12px;
+    --bs-radius-lg: 18px;
+    --bs-radius-full: 9999px;
+
+    --bs-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.30);
+    --bs-shadow-md: 0 10px 28px rgba(0, 0, 0, 0.40);
+    --bs-shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.55);
+    --bs-shadow-bronze: 0 4px 16px rgba(181, 141, 90, 0.22);
+
+    /* Spacing Scale */
+    --bs-space-1: 4px;
+    --bs-space-2: 8px;
+    --bs-space-3: 12px;
+    --bs-space-4: 16px;
+    --bs-space-5: 24px;
+    --bs-space-6: 32px;
+    --bs-space-7: 48px;
+    --bs-content-max: 1240px;
+
+    /* Transitions & Focus */
+    --bs-motion-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --bs-motion-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --bs-focus-ring: 0 0 0 3px rgba(181, 141, 90, 0.35);
+
+    /* Backward-Compatibility Aliases */
+    --bg-canvas: var(--bs-color-ink);
+    --bg-surface: var(--bs-color-surface);
+    --bg-surface-hover: var(--bs-color-surface-hover);
+    --border-mint: var(--bs-color-border);
+    --text-primary: var(--bs-color-text);
+    --text-muted: var(--bs-color-muted);
+    --text-faint: var(--bs-color-faint);
+    --text-inverse: #11151C;
+    --accent-emerald: var(--bs-color-success);
+    --accent-emerald-hover: var(--bs-color-success-hover);
+    --accent-amber: var(--bs-color-primary);
+    --accent-teal: var(--bs-color-success);
+    --accent-crimson: var(--bs-color-danger);
+    --glass: var(--bs-color-surface-glass);
+    --shadow: var(--bs-shadow-lg);
+}
+
+/* ==========================================================================
+   Base & Reset
+   ========================================================================== */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bs-color-ink);
+    background-image:
+        radial-gradient(circle at 20% 12%, rgba(181, 141, 90, 0.04), transparent 35%),
+        radial-gradient(circle at 80% 88%, rgba(86, 124, 104, 0.03), transparent 35%);
+    background-attachment: fixed;
+    color: var(--bs-color-text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    color: var(--bs-color-text);
+    letter-spacing: -0.3px;
+}
+
+a, button, input, select, textarea {
+    font: inherit;
+    color: inherit;
+}
+
+a {
+    text-decoration: none;
+    transition: color var(--bs-motion-fast);
+}
+
+:focus-visible {
+    outline: none;
+    box-shadow: var(--bs-focus-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ==========================================================================
+   Navigation Bar & Brand Header
+   ========================================================================== */
+
+.navbar, .bs-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 74px;
+    padding: 0 6%;
+    background: rgba(17, 21, 28, 0.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--bs-color-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo, .bs-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--bs-color-text);
+    font-family: Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    text-decoration: none;
+}
+
+.logo span, .bs-logo span {
+    color: var(--bs-color-primary-light);
+}
+
+.logo-badge {
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: var(--bs-radius-sm);
+    background: var(--bs-color-primary-soft);
+    color: var(--bs-color-primary-light);
+    border: 1px solid rgba(181, 141, 90, 0.35);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.nav-links, .bs-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    list-style: none;
+}
+
+.nav-links a, .bs-nav-links a, .back-home, .bs-back-link {
+    color: var(--bs-color-muted);
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color var(--bs-motion-fast);
+}
+
+.nav-links a:hover, .bs-nav-links a:hover, .back-home:hover, .bs-back-link:hover {
+    color: var(--bs-color-text);
+}
+
+/* Authenticated User Identity Chip in Navbar */
+.bs-user-chip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 14px;
+    background: var(--bs-color-surface);
+    border: 1px solid var(--bs-color-border);
+    border-radius: var(--bs-radius-sm);
+    box-shadow: var(--bs-shadow-sm);
+}
+
+.bs-user-chip__info {
+    text-align: right;
+    line-height: 1.25;
+}
+
+.bs-user-chip__name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--bs-color-text);
+}
+
+.bs-user-chip__meta {
+    font-size: 11px;
+    color: var(--bs-color-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+/* ==========================================================================
+   Buttons & Interactive Controls
+   ========================================================================== */
+
+.bs-button, .nav-button, .primary-button, .role-button, .form-submit-button, .secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: Inter, system-ui, sans-serif;
+    font-weight: 650;
+    font-size: 14px;
+    border-radius: var(--bs-radius-sm);
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: background var(--bs-motion-fast), border-color var(--bs-motion-fast),
+                color var(--bs-motion-fast), transform var(--bs-motion-fast),
+                box-shadow var(--bs-motion-fast), opacity var(--bs-motion-fast);
+}
+
+.bs-button:active, .primary-button:active, .form-submit-button:active {
+    transform: translateY(1px);
+}
+
+.bs-button:disabled, .bs-button[aria-disabled="true"],
+.form-submit-button:disabled, .primary-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Primary Button Variant (Muted Bronze with Dark Ink Text for High-End Contrast) */
+.bs-button--primary, .nav-button, .primary-button, .role-button, .form-submit-button {
+    background: var(--bs-color-primary);
+    color: #11151C;
+    border-color: var(--bs-color-primary);
+    padding: 11px 22px;
+    font-weight: 700;
+    box-shadow: var(--bs-shadow-bronze);
+}
+
+.bs-button--primary:hover, .nav-button:hover, .primary-button:hover, .role-button:hover, .form-submit-button:hover {
+    background: var(--bs-color-primary-hover);
+    border-color: var(--bs-color-primary-hover);
+    color: #11151C;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(181, 141, 90, 0.32);
+}
+
+/* Secondary Button Variant (Graphite with Subtle Border) */
+.bs-button--secondary, .secondary-button {
+    background: var(--bs-color-surface);
+    color: var(--bs-color-text);
+    border-color: var(--bs-color-border);
+    padding: 11px 20px;
+}
+
+.bs-button--secondary:hover, .secondary-button:hover {
+    background: var(--bs-color-surface-hover);
+    border-color: var(--bs-color-primary);
+    color: var(--bs-color-primary-light);
+    transform: translateY(-1px);
+}
+
+/* Danger Button Variant */
+.bs-button--danger {
+    background: var(--bs-color-danger-soft);
+    color: var(--bs-color-danger);
+    border-color: rgba(200, 121, 121, 0.35);
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+.bs-button--danger:hover {
+    background: var(--bs-color-danger);
+    color: #11151C;
+    border-color: var(--bs-color-danger);
+    transform: translateY(-1px);
+}
+
+/* Ghost Button Variant */
+.bs-button--ghost {
+    background: transparent;
+    color: var(--bs-color-muted);
+    border-color: transparent;
+    padding: 8px 14px;
+}
+
+.bs-button--ghost:hover {
+    background: rgba(232, 229, 222, 0.05);
+    color: var(--bs-color-text);
+}
+
+.bs-button--sm {
+    padding: 7px 12px;
+    font-size: 12px;
+    min-height: 32px;
+}
+
+/* Button Spinner for Loading State */
+.bs-spinner {
+    display: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(17, 21, 28, 0.35);
+    border-top-color: #11151C;
+    border-radius: 50%;
+    animation: bs-spin 0.65s linear infinite;
+}
+
+.bs-button.is-loading .bs-spinner, .form-submit-button.is-loading .bs-spinner {
+    display: inline-block;
+}
+
+@keyframes bs-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Layout Containers & Page Frames
+   ========================================================================== */
+
+.bs-page-container, .form-page-container, .auth-container {
+    width: min(var(--bs-content-max), 92%);
+    margin: 0 auto;
+    padding: 48px 0 80px;
+}
+
+.bs-page-header, .form-intro, .auth-intro {
+    margin-bottom: 32px;
+}
+
+.bs-eyebrow, .auth-tag, .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: var(--bs-radius-full);
+    background: var(--bs-color-primary-soft);
+    color: var(--bs-color-primary-light);
+    border: 1px solid rgba(181, 141, 90, 0.35);
+    margin-bottom: 12px;
+}
+
+.bs-page-header h1, .form-intro h1, .auth-intro h1 {
+    font-size: clamp(26px, 3.5vw, 38px);
+    font-weight: 700;
+    color: var(--bs-color-text);
+    line-height: 1.2;
+    letter-spacing: -0.4px;
+    margin-bottom: 8px;
+}
+
+.bs-page-header p, .form-intro p, .auth-intro p {
+    font-size: 15px;
+    color: var(--bs-color-muted);
+    max-width: 650px;
+    line-height: 1.6;
+}
+
+/* Centered Form Wrapper */
+.bs-auth-card-wrap {
+    max-width: 460px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   Cards, Panels & Surfaces
+   ========================================================================== */
+
+.bs-card, .registration-form-card, .feature-card, .role-card, .auction-card {
+    background: var(--bs-color-surface);
+    border: 1px solid var(--bs-color-border);
+    border-radius: var(--bs-radius-md);
+    box-shadow: var(--bs-shadow-sm);
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--bs-motion-normal), border-color var(--bs-motion-normal), box-shadow var(--bs-motion-normal);
+}
+
+.bs-card-elevated {
+    background: var(--bs-color-surface-elevated);
+    box-shadow: var(--bs-shadow-md);
+}
+
+/* Form Card Styling */
+.registration-form-card {
+    padding: 32px;
+    margin-bottom: 28px;
+}
+
+/* Feature & Role Card Grids */
+.feature-grid, .role-grid, .bs-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+    gap: 22px;
+}
+
+.feature-card, .role-card {
+    padding: 32px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.feature-card:hover, .role-card:hover {
+    border-color: rgba(181, 141, 90, 0.45);
+    transform: translateY(-3px);
+    box-shadow: var(--bs-shadow-md);
+}
+
+.feature-icon, .role-icon {
+    font-size: 38px;
+    margin-bottom: 16px;
+    display: inline-block;
+}
+
+.feature-card h3, .role-card h2 {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--bs-color-text);
+    margin-bottom: 8px;
+}
+
+.feature-card p, .role-card p {
+    font-size: 14px;
+    color: var(--bs-color-muted);
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* ==========================================================================
+   Auction Cards & Bidding Floor Grid
+   ========================================================================== */
+
+.bs-auction-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+.bs-auction-card {
+    background: var(--bs-color-surface);
+    border: 1px solid var(--bs-color-border);
+    border-radius: var(--bs-radius-md);
+    box-shadow: var(--bs-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform var(--bs-motion-normal), border-color var(--bs-motion-normal), box-shadow var(--bs-motion-normal);
+}
+
+.bs-auction-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(181, 141, 90, 0.45);
+    box-shadow: var(--bs-shadow-md);
+}
+
+.bs-auction-card__media {
+    position: relative;
+    width: 100%;
+    height: 190px;
+    background: var(--bs-color-ink-canvas);
+    overflow: hidden;
+}
+
+.bs-auction-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.bs-auction-card:hover .bs-auction-card__img {
+    transform: scale(1.03);
+}
+
+.bs-auction-card__badge-overlay {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+}
+
+.bs-auction-card__body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+}
+
+.bs-auction-card__header {
+    margin-bottom: 12px;
+}
+
+.bs-auction-card__title {
+    font-family: Georgia, serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--bs-color-text);
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.bs-auction-card__category {
+    font-size: 12px;
+    color: var(--bs-color-muted);
+    font-weight: 600;
+}
+
+.bs-auction-card__desc {
+    font-size: 13px;
+    color: var(--bs-color-text-secondary);
+    line-height: 1.5;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 38px;
+}
+
+.bs-auction-card__stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    background: var(--bs-color-ink-canvas);
+    padding: 12px 14px;
+    border-radius: var(--bs-radius-sm);
+    border: 1px solid var(--bs-color-border-subtle);
+    margin-bottom: 16px;
+}
+
+.bs-auction-card__current-bid {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--bs-color-primary-light);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    line-height: 1;
+    display: inline-block;
+    transition: color 0.4s ease, transform 0.2s ease;
+}
+
+.bs-auction-card__timer {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--bs-color-primary-light);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: var(--bs-color-primary-soft);
+    padding: 4px 8px;
+    border-radius: var(--bs-radius-xs);
+    border: 1px solid rgba(181, 141, 90, 0.35);
+}
+
+.bs-auction-card__footer {
+    border-top: 1px solid var(--bs-color-border-subtle);
+    padding-top: 14px;
+}
+
+/* ==========================================================================
+   Forms, Inputs, and Fields
+   ========================================================================== */
+
+.form-grid, .bs-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.full-width, .bs-col-span-2 {
+    grid-column: 1 / -1;
+}
+
+.form-group, .bs-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label, .bs-field__label {
+    font-size: 13px;
+    font-weight: 650;
+    color: var(--bs-color-text-secondary);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select,
+.bs-field__control {
+    width: 100%;
+    background: var(--bs-color-ink-canvas);
+    border: 1px solid var(--bs-color-border);
+    border-radius: var(--bs-radius-sm);
+    color: var(--bs-color-text);
+    padding: 11px 14px;
+    font-size: 14px;
+    transition: border-color var(--bs-motion-fast), box-shadow var(--bs-motion-fast);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+.bs-field__control::placeholder {
+    color: var(--bs-color-faint);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus,
+.bs-field__control:focus {
+    border-color: var(--bs-color-primary);
+    box-shadow: var(--bs-focus-ring);
+    outline: none;
+}
+
+.bs-field__help, .form-note {
+    font-size: 12px;
+    color: var(--bs-color-muted);
+    line-height: 1.4;
+    margin-top: 4px;
+}
+
+.form-note a {
+    color: var(--bs-color-primary-light);
+    font-weight: 700;
+}
+
+.form-note a:hover {
+    color: var(--bs-color-text);
+    text-decoration: underline;
+}
+
+/* Image Upload Preview */
+.bs-image-preview {
+    display: block;
+    max-width: 100%;
+    max-height: 180px;
+    margin-top: 10px;
+    object-fit: contain;
+    border: 1px solid var(--bs-color-border);
+    border-radius: var(--bs-radius-sm);
+    background: var(--bs-color-ink-canvas);
+}
+
+/* ==========================================================================
+   Tables & Data Grids
+   ========================================================================== */
+
+.bs-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--bs-color-border);
+    border-radius: var(--bs-radius-sm);
+    background: var(--bs-color-surface);
+}
+
+.bs-table, .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 13.5px;
+}
+
+.bs-table th, .bs-table td,
+.data-table th, .data-table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--bs-color-border-subtle);
+    vertical-align: middle;
+}
+
+.bs-table th, .data-table th {
+    background: #171E28;
+    color: var(--bs-color-muted);
+    font-size: 11.5px;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    white-space: nowrap;
+}
+
+.bs-table tbody tr:hover, .data-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.bs-table tbody tr:last-child td, .data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ==========================================================================
+   Status Badges & Chips
+   ========================================================================== */
+
+.bs-status, .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--bs-radius-full);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.3px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.bs-status::before, .status-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* Status Variants */
+.bs-status--live, .status-live {
+    background: var(--bs-color-success-soft);
+    color: var(--bs-color-success-light);
+    border-color: rgba(86, 124, 104, 0.45);
+}
+.bs-status--live::before, .status-live::before {
+    animation: bs-pulse 1.8s ease-in-out infinite;
+}
+
+.bs-status--won, .status-completed {
+    background: var(--bs-color-primary-soft);
+    color: var(--bs-color-primary-light);
+    border-color: rgba(181, 141, 90, 0.45);
+}
+
+.bs-status--warning, .status-warning, .bs-status--pending {
+    background: var(--bs-color-warning-soft);
+    color: var(--bs-color-primary-light);
+    border-color: rgba(196, 154, 90, 0.45);
+}
+
+.bs-status--danger, .status-danger, .bs-status--ended, .status-scheduled {
+    background: #252F3C;
+    color: var(--bs-color-muted);
+    border-color: var(--bs-color-border);
+}
+
+.bs-status--rejected {
+    background: var(--bs-color-danger-soft);
+    color: var(--bs-color-danger);
+    border-color: rgba(200, 121, 121, 0.40);
+}
+
+@keyframes bs-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* ==========================================================================
+   Modals & Dialogs
+   ========================================================================== */
+
+.bs-modal-overlay, .modal-overlay, .invoice-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(11, 14, 20, 0.85);
+    backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.bs-modal-card, .modal-card, .invoice-card {
+    background: var(--bs-color-surface);
+    border: 1px solid var(--bs-color-border);
+    border-radius: var(--bs-radius-md);
+    width: 92%;
+    max-width: 540px;
+    padding: 28px;
+    box-shadow: var(--bs-shadow-lg);
+    color: var(--bs-color-text);
+    animation: bs-scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes bs-scaleIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ==========================================================================
+   Toast Notifications
+   ========================================================================== */
+
+.toast-notification, .bs-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 13px 18px;
+    border-radius: var(--bs-radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--bs-shadow-lg);
+    opacity: 0;
+    transform: translateY(-16px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.toast-success, .bs-toast--success {
+    background: #17261E;
+    border: 1px solid var(--bs-color-success);
+    color: var(--bs-color-success-light);
+}
+
+.toast-error, .bs-toast--error {
+    background: #2D1A1A;
+    border: 1px solid var(--bs-color-danger);
+    color: var(--bs-color-danger-light);
+}
+
+.toast-visible, .bs-toast--visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ==========================================================================
+   Public Landing Page Hero
+   ========================================================================== */
+
+.hero, .bs-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    min-height: 540px;
+    padding: 80px 8%;
+    background:
+        radial-gradient(circle at 75% 25%, rgba(181, 141, 90, 0.12), transparent 40%),
+        linear-gradient(120deg, rgba(17, 21, 28, 0.98) 0%, rgba(26, 34, 46, 0.94) 50%, rgba(17, 21, 28, 0.85) 100%),
+        url("../images/auction-gavel.avif") center / cover no-repeat;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 1px solid var(--bs-color-border);
+}
+
+.hero-content, .bs-hero__content {
+    max-width: 620px;
+    animation: slideUp 0.8s ease-out;
+    transition: max-width 0.3s ease;
+}
+
+.hero.hero--no-live-lot .hero-content,
+.bs-hero.hero--no-live-lot .bs-hero__content {
+    max-width: 800px;
+}
+
+.hero h1, .bs-hero h1 {
+    font-family: Georgia, serif;
+    font-size: clamp(36px, 4.8vw, 60px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.6px;
+    margin-bottom: 18px;
+}
+
+.hero h1 span, .bs-hero h1 span {
+    color: var(--bs-color-primary-light);
+}
+
+.hero p, .bs-hero p {
+    font-size: 17px;
+    color: var(--bs-color-text-secondary);
+    line-height: 1.65;
+    margin-bottom: 28px;
+}
+
+.hero-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+/* Dynamic Live Lot Card */
+.hero .auction-card {
+    width: 340px;
+    padding: 26px;
+    background: rgba(32, 40, 52, 0.92);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--bs-color-border);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.50);
+}
+
+.hero .auction-card h2 {
+    font-size: 20px;
+    margin-bottom: 14px;
+}
+
+.bid-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--bs-color-border-subtle);
+    font-size: 13.5px;
+    color: var(--bs-color-muted);
+}
+
+.bid-row strong {
+    color: var(--bs-color-primary-light);
+    font-weight: 750;
+}
+
+.timer {
+    background: var(--bs-color-ink-canvas);
+    border: 1px solid var(--bs-color-border);
+    border-radius: var(--bs-radius-sm);
+    color: var(--bs-color-text);
+    font-size: 18px;
+    font-weight: 800;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    padding: 12px;
+    text-align: center;
+    margin-top: 18px;
+}
+
+/* Feature Sections */
+.section {
+    padding: 70px 8%;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-title h2 {
+    font-family: Georgia, serif;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    margin-bottom: 8px;
+}
+
+.section-title p {
+    font-size: 15px;
+    color: var(--bs-color-muted);
+}
+
+/* Footer */
+.footer {
+    padding: 32px 8%;
+    background: #0D1117;
+    border-top: 1px solid var(--bs-color-border);
+    text-align: center;
+    color: var(--bs-color-muted);
+    font-size: 13px;
+}
+
+/* ==========================================================================
+   Alerts & Banners
+   ========================================================================== */
+
+.bs-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 18px;
+    border-radius: var(--bs-radius-sm);
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 22px;
+}
+
+.bs-alert--success {
+    background: var(--bs-color-success-soft);
+    border: 1px solid rgba(86, 124, 104, 0.45);
+    color: var(--bs-color-success-light);
+}
+
+.bs-alert--error {
+    background: var(--bs-color-danger-soft);
+    border: 1px solid rgba(200, 121, 121, 0.45);
+    color: var(--bs-color-danger-light);
+}
+
+.bs-alert--warning {
+    background: var(--bs-color-warning-soft);
+    border: 1px solid rgba(196, 154, 90, 0.45);
+    color: var(--bs-color-primary-light);
+}
+
+/* ==========================================================================
+   Keyframes & Responsive Breakpoints
+   ========================================================================== */
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 900px) {
+    .hero, .bs-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 60px 6%;
+    }
+    .hero .auction-card {
+        width: 100%;
+        max-width: 420px;
+    }
+    .feature-grid, .role-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 680px) {
+    .navbar, .bs-navbar {
+        padding: 0 4%;
+        height: 68px;
+    }
+    .nav-links {
+        display: none;
+    }
+    .form-grid, .bs-form-grid {
+        grid-template-columns: 1fr;
+    }
+    .registration-form-card {
+        padding: 22px 18px;
+    }
+    .bs-page-container, .form-page-container {
+        padding: 32px 0 60px;
+    }
+}
+
+/* ==========================================================================
+   HASHbid Cinematic Founder-to-Brand Transformation Animation (Scenes 1 - 4)
+   ========================================================================== */
+
+.hb-intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at 50% 50%, #1A222D 0%, #11151C 65%, #0B0E14 100%);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    pointer-events: all;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1), visibility 700ms;
+    cursor: pointer;
+}
+
+.hb-intro-overlay.hb-fade-out {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.hb-intro-bg-glow {
+    position: absolute;
+    width: 520px;
+    height: 520px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(181, 141, 90, 0.20) 0%, rgba(181, 141, 90, 0.05) 55%, transparent 70%);
+    filter: blur(50px);
+    pointer-events: none;
+    animation: hbCenterAura 3.6s ease-in-out infinite alternate;
+}
+
+@keyframes hbCenterAura {
+    0% { transform: scale(0.9); opacity: 0.55; }
+    100% { transform: scale(1.2); opacity: 0.9; }
+}
+
+.hb-cinema-stage {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    max-width: 640px;
+    padding: 0 20px;
+}
+
+/* Scene 1: Sequential Names Display */
+.hb-names-viewport {
+    position: relative;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    animation: hbNamesViewportFade 300ms ease-in forwards 1.75s;
+}
+
+@keyframes hbNamesViewportFade {
+    to { opacity: 0; visibility: hidden; height: 0; margin-bottom: 0; }
+}
+
+.hb-founder-slot {
+    position: absolute;
+    font-size: 2.1rem;
+    font-weight: 800;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--bs-color-text);
+    opacity: 0;
+    transform: scale(0.92);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.hb-founder-slot .hb-init-hi {
+    color: var(--bs-color-primary-light);
+    text-shadow: 0 0 16px rgba(181, 141, 90, 0.55);
+}
+
+.hb-founder-slot .hb-light-sweep {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(232, 229, 222, 0.35), transparent);
+    transform: skewX(-20deg);
+}
+
+/* Slot 1: HANZALA (0ms - 460ms) */
+.hb-slot-1 {
+    animation: hbNameCard 460ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0ms;
+}
+.hb-slot-1 .hb-light-sweep {
+    animation: hbSweep 400ms ease forwards 50ms;
+}
+
+/* Slot 2: AWAIS (460ms - 900ms) */
+.hb-slot-2 {
+    animation: hbNameCard 440ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards 460ms;
+}
+.hb-slot-2 .hb-light-sweep {
+    animation: hbSweep 400ms ease forwards 500ms;
+}
+
+/* Slot 3: SHOAIB (900ms - 1340ms) */
+.hb-slot-3 {
+    animation: hbNameCard 440ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards 900ms;
+}
+.hb-slot-3 .hb-light-sweep {
+    animation: hbSweep 400ms ease forwards 940ms;
+}
+
+/* Slot 4: HAZIQUE (1340ms - 1760ms) */
+.hb-slot-4 {
+    animation: hbNameCard 420ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards 1340ms;
+}
+.hb-slot-4 .hb-light-sweep {
+    animation: hbSweep 400ms ease forwards 1380ms;
+}
+
+@keyframes hbNameCard {
+    0% { opacity: 0; transform: scale(0.88) translateY(6px); filter: blur(3px); }
+    22% { opacity: 1; transform: scale(1.02) translateY(0); filter: blur(0); }
+    80% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+    100% { opacity: 0; transform: scale(0.96) translateY(-4px); filter: blur(2px); }
+}
+
+@keyframes hbSweep {
+    0% { left: -100%; }
+    100% { left: 180%; }
+}
+
+/* Scene 2 & 3: Wordmark Convergence & Birth of HASHbid */
+.hb-brand-stage {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    position: relative;
+    line-height: 1;
+}
+
+.hb-hash-letters {
+    display: inline-flex;
+    align-items: baseline;
+}
+
+.hb-char-init {
+    font-family: Georgia, serif;
+    font-size: 3.4rem;
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    color: var(--bs-color-text);
+    opacity: 0;
+    display: inline-block;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.6));
+}
+
+/* Letters converge inwards into H-A-S-H at 1.78s */
+.hb-char-init.hb-h1 {
+    transform: translateX(-40px) scale(1.3);
+    animation: hbLetterConverge 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards 1780ms;
+}
+.hb-char-init.hb-a {
+    transform: translateX(-15px) scale(1.3);
+    animation: hbLetterConverge 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards 1820ms;
+}
+.hb-char-init.hb-s {
+    transform: translateX(15px) scale(1.3);
+    animation: hbLetterConverge 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards 1860ms;
+}
+.hb-char-init.hb-h2 {
+    transform: translateX(40px) scale(1.3);
+    animation: hbLetterConverge 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards 1900ms;
+}
+
+@keyframes hbLetterConverge {
+    0% { opacity: 0; filter: blur(5px); }
+    60% { opacity: 1; filter: blur(0); }
+    100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+}
+
+/* Scene 3: "bid" arrives from right with mask reveal at 2.22s */
+.hb-bid-cluster {
+    display: inline-flex;
+    align-items: baseline;
+    font-family: Georgia, serif;
+    font-size: 3.4rem;
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    color: var(--bs-color-primary-light);
+    text-shadow: 0 0 24px rgba(181, 141, 90, 0.50);
+    opacity: 0;
+    transform: translateX(28px);
+    animation: hbBidReveal 480ms cubic-bezier(0.16, 1, 0.3, 1) forwards 2220ms;
+}
+
+@keyframes hbBidReveal {
+    0% { opacity: 0; transform: translateX(28px) scale(0.9); filter: blur(4px); }
+    70% { opacity: 1; transform: translateX(-2px) scale(1.03); filter: blur(0); }
+    100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+}
+
+/* Brand Underline Sweep */
+.hb-brand-underline {
+    position: relative;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #B58D5A 0%, #567C68 100%);
+    border-radius: 2px;
+    margin-top: 10px;
+    opacity: 0;
+    box-shadow: 0 0 12px rgba(181, 141, 90, 0.4);
+    animation: hbUnderlineExpand 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards 2450ms;
+}
+
+@keyframes hbUnderlineExpand {
+    0% { width: 0; opacity: 0; }
+    100% { width: 140px; opacity: 1; }
+}
+
+/* Tagline Reveal */
+.hb-cinema-tagline {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--bs-color-muted);
+    margin-top: 18px;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: hbTaglineReveal 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards 2600ms;
+}
+
+.hb-cinema-tagline span {
+    color: var(--bs-color-primary-light);
+    font-weight: 700;
+}
+
+@keyframes hbTaglineReveal {
+    0% { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.hb-intro-skip-hint {
+    position: absolute;
+    bottom: 24px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--bs-color-faint);
+    text-transform: uppercase;
+    opacity: 0;
+    animation: hbSkipHintFade 400ms ease forwards 800ms;
+}
+
+@keyframes hbSkipHintFade {
+    to { opacity: 0.65; }
+}
+
+/* Reduced Motion Safety */
+@media (prefers-reduced-motion: reduce) {
+    .hb-intro-overlay {
+        display: none !important;
+    }
+}

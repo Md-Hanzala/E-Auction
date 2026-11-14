@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Context path="/EAuction">
-    <Resources>
-        <PreResources
-            className="org.apache.catalina.webresources.DirResourceSet"
-            base="D:\E-Auction\uploads"
-            webAppMount="/uploads" />
-    </Resources>
-</Context>
