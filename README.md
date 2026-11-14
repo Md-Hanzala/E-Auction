@@ -1,4 +1,4 @@
-﻿# HASHbid
+# HASHbid
 ### A Real-Time Online Auction Marketplace
 
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
@@ -113,47 +113,50 @@ HASHbid follows a classic, clean **Model-View-Controller (MVC)** architectural p
 
 ```mermaid
 flowchart TD
-    Client["Browser Client\n(HTML5, CSS3, Vanilla ES6)"]
+    Client["Browser Client<br/>(HTML5, CSS3, ES6 JavaScript)"]
 
-    subgraph Container ["Servlet Container (Apache Tomcat 10.1+)"]
-        Filter["AuthFilter (/*)\nRole Guard & Cache-Control"]
+    subgraph Container["Servlet Container (Apache Tomcat 10.1+)"]
+        Filter["AuthFilter (/*)<br/>Role Guard & Cache-Control"]
 
-        subgraph Controllers ["Controller Layer (@WebServlet)"]
-            AuthCtrl["AuthServlet\n/login, /logout\n/buyer-register, /seller-register"]
-            BuyerCtrl["BuyerServlet\n/buyer-dashboard, /place-bid\n/live-auction-updates, /featured-live-auction"]
-            SellerCtrl["SellerServlet\n/seller-dashboard, /add-product"]
-            AdminCtrl["AdminServlet\n/admin-dashboard, /admin-actions\n/admin-bid-history"]
+        subgraph Controllers["Controller Layer (@WebServlet)"]
+            AuthServlet["AuthServlet<br/>/login, /logout<br/>/buyer-register, /seller-register"]
+            BuyerServlet["BuyerServlet<br/>/buyer-dashboard, /place-bid<br/>/live-auction-updates, /featured-live-auction"]
+            SellerServlet["SellerServlet<br/>/seller-dashboard, /add-product"]
+            AdminServlet["AdminServlet<br/>/admin-dashboard, /admin-actions<br/>/admin-bid-history"]
         end
 
-        subgraph Background ["Daemon Thread"]
-            Daemon["AuctionLifecycleListener\n(Executors.newSingleThreadScheduledExecutor @ 15s)"]
-        end
-
-        subgraph Views ["Presentation Layer (JSP & Static HTML)"]
-            JSPViews["buyer-dashboard.jsp\nseller-dashboard.jsp\nadmin-dashboard.jsp\nadmin-bid-history.jsp"]
-            HTMLPages["index.html, auth.html\nlogin.html, admin-login.html\n*-register.html, seller-pending.html"]
-        end
+        AuctionLifecycleListener["AuctionLifecycleListener<br/>(Executors.newSingleThreadScheduledExecutor @ 15s)"]
+        Views["JSP & HTML Views<br/>(buyer/seller/admin dashboards, bid-history, landing pages)"]
     end
 
-    subgraph ModelLayer ["Model & Persistence Layer"]
-        Models["Models: User, Product, Auction"]
-        DAOs["DAOs: UserDAO, ProductDAO, AuctionDAO"]
-        Conn["DBConnection\n(Loads db.properties dynamically)"]
+    subgraph ModelLayer["Model & Persistence Layer"]
+        Models["Domain Models<br/>(User, Product, Auction)"]
+        DAOs["Data Access Objects<br/>(UserDAO, ProductDAO, AuctionDAO)"]
+        DBConnection["DBConnection<br/>(Loads db.properties dynamically)"]
     end
 
-    subgraph Database ["Database Layer"]
-        Oracle[("Oracle Database 10g XE\nSchema: HASHBID")]
+    subgraph Database["Database Layer"]
+        Oracle[("Oracle Database 10g XE<br/>Schema: HASHBID")]
     end
 
-    Client -->|HTTP GET/POST / AJAX| Filter
-    Filter --> Controllers
-    Controllers --> Views
-    Controllers --> DAOs
-    Daemon -->|closeExpiredAuctions()| DAOs
+    Client -->|"HTTP Requests & AJAX"| Filter
+    Filter -->|"Dispatches"| AuthServlet
+    Filter -->|"Dispatches"| BuyerServlet
+    Filter -->|"Dispatches"| SellerServlet
+    Filter -->|"Dispatches"| AdminServlet
+    AuthServlet --> DAOs
+    BuyerServlet --> DAOs
+    SellerServlet --> DAOs
+    AdminServlet --> DAOs
+    AuctionLifecycleListener -->|"closeExpiredAuctions()"| DAOs
     DAOs --> Models
-    DAOs --> Conn
-    Conn -->|JDBC Thin| Oracle
-    Views -->|HTML / JSON Stream| Client
+    DAOs --> DBConnection
+    DBConnection -->|"JDBC Thin Driver"| Oracle
+    AuthServlet --> Views
+    BuyerServlet --> Views
+    SellerServlet --> Views
+    AdminServlet --> Views
+    Views -->|"HTML / JSON Stream"| Client
 ```
 
 ### Request Flow Walkthrough
