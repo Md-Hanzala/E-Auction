@@ -18,7 +18,7 @@ The user interface features a custom brand identity (**Ink Black `#11151C`**, **
 2. [Core Features & Role Matrix](#2-core-features--role-matrix)
 3. [Technology Stack](#3-technology-stack)
 4. [Architecture & Request Flow](#4-architecture--request-flow)
-5. [Database Structure & Schema](#5-database-structure--schema)
+5. [Database Entity-Relationship (ER) Diagram](#5-database-entity-relationship-er-diagram)
 6. [Prerequisites](#6-prerequisites)
 7. [Installation & Setup Guide](#7-installation--setup-guide)
 8. [Database Configuration](#8-database-configuration)
@@ -169,83 +169,104 @@ flowchart TD
 
 ---
 
-## 5. Database Structure & Schema
+## 5. Database Entity-Relationship (ER) Diagram
 
-The application operates against an isolated Oracle user schema (`HASHBID`).
+HASHbid uses a relational Oracle database (`HASHBID` schema) with six principal relationships between its five application tables. Primary keys, foreign key constraints, and unique constraints enforce strict referential integrity across user accounts, catalog products, live auction sessions, immutable bid ledgers, and settlement disbursements.
 
-### Tables & Relationships
+### Entity-Relationship Diagram
 
 ```mermaid
 erDiagram
     USERS ||--o{ PRODUCTS : "lists"
-    USERS ||--o{ AUCTIONS : "highest bidder"
-    USERS ||--o{ BIDS : "places"
     PRODUCTS ||--o{ AUCTIONS : "scheduled in"
+    USERS |o--o{ AUCTIONS : "leads as highest bidder"
     AUCTIONS ||--o{ BIDS : "receives"
-    AUCTIONS ||--o{ SETTLEMENTS : "settled by"
+    USERS ||--o{ BIDS : "places"
+    AUCTIONS ||--o{ SETTLEMENTS : "settles via"
 
     USERS {
-        NUMBER user_id PK
-        VARCHAR2 full_name
-        VARCHAR2 email UK
-        VARCHAR2 phone
-        VARCHAR2 password
-        VARCHAR2 role
-        VARCHAR2 status
-        VARCHAR2 address
-        TIMESTAMP created_at
+        NUMBER USER_ID PK
+        VARCHAR2 FULL_NAME
+        VARCHAR2 EMAIL UK
+        VARCHAR2 PHONE
+        VARCHAR2 PASSWORD
+        VARCHAR2 ROLE
+        VARCHAR2 STATUS
+        VARCHAR2 ADDRESS
+        TIMESTAMP CREATED_AT
     }
 
     PRODUCTS {
-        NUMBER product_id PK
-        NUMBER seller_id FK
-        VARCHAR2 product_name
-        VARCHAR2 category
-        VARCHAR2 description
-        NUMBER starting_price
-        VARCHAR2 image_path
-        VARCHAR2 status
-        TIMESTAMP created_at
+        NUMBER PRODUCT_ID PK
+        NUMBER SELLER_ID FK
+        VARCHAR2 PRODUCT_NAME
+        VARCHAR2 CATEGORY
+        VARCHAR2 DESCRIPTION
+        NUMBER STARTING_PRICE
+        VARCHAR2 IMAGE_PATH
+        VARCHAR2 STATUS
+        TIMESTAMP CREATED_AT
     }
 
     AUCTIONS {
-        NUMBER auction_id PK
-        NUMBER product_id FK
-        TIMESTAMP start_time
-        TIMESTAMP end_time
-        NUMBER current_bid
-        NUMBER highest_bidder_id FK
-        NUMBER min_increment
-        VARCHAR2 execution_mode
-        VARCHAR2 status
+        NUMBER AUCTION_ID PK
+        NUMBER PRODUCT_ID FK
+        TIMESTAMP START_TIME
+        TIMESTAMP END_TIME
+        NUMBER CURRENT_BID
+        NUMBER HIGHEST_BIDDER_ID FK "Nullable"
+        NUMBER MIN_INCREMENT
+        VARCHAR2 EXECUTION_MODE
+        VARCHAR2 STATUS
     }
 
     BIDS {
-        NUMBER bid_id PK
-        NUMBER auction_id FK
-        NUMBER bidder_id FK
-        NUMBER bid_amount
-        TIMESTAMP bid_time
+        NUMBER BID_ID PK
+        NUMBER AUCTION_ID FK
+        NUMBER BIDDER_ID FK
+        NUMBER BID_AMOUNT
+        TIMESTAMP BID_TIME
     }
 
     SETTLEMENTS {
-        NUMBER settlement_id PK
-        NUMBER auction_id FK
-        NUMBER gross_amount
-        NUMBER platform_fee
-        NUMBER seller_payout
-        VARCHAR2 payment_status
-        TIMESTAMP settled_at
+        NUMBER SETTLEMENT_ID PK
+        NUMBER AUCTION_ID FK
+        NUMBER GROSS_AMOUNT
+        NUMBER PLATFORM_FEE
+        NUMBER SELLER_PAYOUT
+        VARCHAR2 PAYMENT_STATUS
+        TIMESTAMP SETTLED_AT
     }
 ```
 
-- **`USERS`:** Stores account credentials, contact information, role (`BUYER`, `SELLER`, `ADMIN`), and account state (`PENDING`, `APPROVED`).
-- **`PRODUCTS`:** Catalog items submitted by merchants. Stores reserve pricing, description, category, photo path, and review status (`PENDING`, `APPROVED`, `SOLD`, `EXPIRED`).
-- **`AUCTIONS`:** Scheduled floor lots. Tracks starting and ending timestamps, leading bid, leading bidder ID, and status (`ACTIVE`, `CLOSED`).
-- **`BIDS`:** Immutable audit log of every submitted offer.
-- **`SETTLEMENTS`:** Prepared relational entity for financial escrow, platform commission calculations, and merchant disbursement. *(Note: Prepared in the DDL schema; currently not queried by the Java DAO layer).*
+### Relational Schema & Entity Responsibilities
 
-### Sequences
+1. **`USERS` — Authentication, Access Control & Marketplace Participation**
+   - Centralizes identity, credential verification, and contact details for all platform users.
+   - The `ROLE` attribute (`BUYER`, `SELLER`, `ADMIN`) dictates navigational privileges, accessible servlet routes, and UI portal views.
+   - The `STATUS` attribute manages participant standing (`PENDING` accounts, such as newly registered merchants, require administrative vetting before listing inventory, while `APPROVED` accounts enjoy full marketplace privileges).
+   - An enforced `UNIQUE` constraint on `EMAIL` guarantees distinct logins, while `USER_ID` serves as the primary relational foreign-key anchor across products, bids, and auction leadership.
+
+2. **`PRODUCTS` & `AUCTIONS` — Connecting Catalog Listings to Floor Sessions**
+   - `PRODUCTS` stores physical item details, reserve valuations, and images submitted by a merchant (`SELLER_ID` referencing `USERS.USER_ID`).
+   - `AUCTIONS` represents a distinct scheduled floor event for an approved item (`PRODUCT_ID` referencing `PRODUCTS.PRODUCT_ID`).
+   - Decoupling products from auction sessions allows a clear separation of concerns: an item can be scheduled across multiple distinct auction windows over time (e.g., if a reserve is unmet or an item is relisted) without duplicating item metadata or re-uploading catalog photos.
+
+3. **`BIDS` — Immutable Bidding History & Audit Trail**
+   - Whenever an authenticated buyer submits an offer via `/place-bid`, an immutable transaction record is written into `BIDS` capturing `AUCTION_ID`, `BIDDER_ID`, `BID_AMOUNT`, and the server timestamp `BID_TIME`.
+   - Recording every offer as an individual entry ensures a complete, tamper-evident audit history accessible by platform operators (`/admin-bid-history`), while providing buyers with their personal bid histories and itemized ledgers.
+
+4. **Tracking the Highest Bidder in `AUCTIONS`**
+   - While `BIDS` records full historical submissions, the `AUCTIONS` table maintains denormalized, real-time summary state through `CURRENT_BID` and `HIGHEST_BIDDER_ID`.
+   - `HIGHEST_BIDDER_ID` is a **nullable foreign key** (`FK_AUCTIONS_BIDDER` referencing `USERS.USER_ID`).
+   - When an auction is first published or before any bids have been submitted, `HIGHEST_BIDDER_ID` remains `NULL`.
+   - As valid bids arrive, the leading amount and leading bidder ID are updated atomically in `AUCTIONS`. This enables high-frequency client polling (`/live-auction-updates`, `/featured-live-auction`) and background lifecycle checks to read current auction leaders instantaneously with standard indexed lookups, bypassing expensive SQL aggregation queries across historical bids.
+
+5. **`SETTLEMENTS` — Purpose & Implementation Status**
+   - Designed to manage financial calculations, platform commission retention (`PLATFORM_FEE`), and merchant net disbursement (`SELLER_PAYOUT`) for concluded lots (`AUCTION_ID` referencing `AUCTIONS.AUCTION_ID`).
+   - **Current Implementation Status:** The `SETTLEMENTS` table and its foreign key index (`IDX_SETTLEMENTS_AUCTION`) are fully defined in the Oracle DDL initialization schema (`02_create_hashbid_schema_and_data.sql`). In the current Java application release, this table is **not queried or updated by the Java DAO layer** (`UserDAO`, `ProductDAO`, `AuctionDAO`). Post-auction settlements and invoices are currently generated dynamically from auction and winning bidder records, and presented as printable settlement invoices in the user portals.
+
+### Primary Key Sequences
 Primary keys are generated using four dedicated Oracle sequences:
 - `USER_SEQ`: User ID sequence (initialized to start at `5`).
 - `PRODUCT_SEQ`: Product ID sequence (initialized to start at `8`).
