@@ -403,10 +403,10 @@ The development database initialization script provisions four fictional test ac
 
 | Role | Name | Email | Password | Status | Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Administrator** | System Administrator | `admin@hashbid.com` | `admin123` | `APPROVED` | Access to `/admin-dashboard` & `/admin-bid-history` |
-| **Merchant** | Zaid Merchant | `zaid.seller@example.com` | `seller123` | `APPROVED` | Access to `/seller-dashboard` & `/add-product` |
-| **Buyer 1** | Aman Buyer | `aman.buyer@example.com` | `buyer123` | `APPROVED` | Access to `/buyer-dashboard` & `/place-bid` |
-| **Buyer 2** | Farhan Contestant | `farhan.buyer@example.com` | `buyer123` | `APPROVED` | Competing bidder on sample lots |
+| **Administrator** | System Administrator | `admin@eauction.com` | `admin123` | `APPROVED` | Access to `/admin-dashboard` & `/admin-bid-history` |
+| **Merchant** | Zaid Merchant | `zaid.seller@test.com` | `pass123` | `APPROVED` | Access to `/seller-dashboard` & `/add-product` |
+| **Buyer 1** | Aman Buyer | `aman.buyer@test.com` | `buyer123` | `APPROVED` | Access to `/buyer-dashboard` & `/place-bid` |
+| **Buyer 2** | Farhan Contestant | `farhan@gmail.com` | `far123` | `APPROVED` | Competing bidder on sample lots |
 
 > **Local Fixture Notice:** These accounts and passwords are created strictly for local development and demonstration. All associated names, phone numbers, and addresses are fictional.
 
